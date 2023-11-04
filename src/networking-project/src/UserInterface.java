@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.plaf.
 
 public class UserInterface extends JFrame {
     private Canvas drawArea;
