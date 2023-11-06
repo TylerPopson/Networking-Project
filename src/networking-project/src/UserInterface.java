@@ -30,10 +30,17 @@ public class UserInterface extends JFrame {
         controls.setLayout(new BoxLayout(controls, BoxLayout.PAGE_AXIS));
         controls.setSize(300, 500);
 
+        timeLimit.setFont(new Font("Fira Code", Font.BOLD, 24));
+        prompt.setFont(new Font("Fira Code", Font.ITALIC, 24));
+
+        controls.add(Box.createRigidArea(new Dimension(200, 10)));
         controls.add(connect);
         controls.add(connuctionStatus);
+        controls.add(Box.createRigidArea(new Dimension(0, 80)));
         controls.add(timeLimit);
+        controls.add(Box.createRigidArea(new Dimension(0, 20)));
         controls.add(prompt);
+        controls.add(Box.createRigidArea(new Dimension(0, 80)));
         controls.add(submit);
 
 //      configure the main window
