@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class UserInterface extends JFrame {
     private  JPanel drawArea;
-    private Canvas canvas;
+    private DrawArea canvas;
     private JPanel controls;
     private JButton connect;
     private JLabel connuctionStatus;
@@ -13,7 +13,7 @@ public class UserInterface extends JFrame {
 
     UserInterface(){
         drawArea = new JPanel();
-        canvas = new Canvas();
+        canvas = new DrawArea();
         controls = new JPanel();
         connect = new JButton("connect");
         connuctionStatus = new JLabel("disconnected");
@@ -22,11 +22,13 @@ public class UserInterface extends JFrame {
         submit = new JButton("submit");
 
         canvas.setBackground(new Color(0.6f,0.6f,0.6f));
-        canvas.setSize(new Dimension(500, 500));
+        canvas.setSize(500, 500);
 
         drawArea.add(canvas);
+        drawArea.setBackground(new Color(10));
+        drawArea.setLayout(null);
 
-//      Configure the controls and info pannel
+//      Configure the controls and info panel
         controls.setLayout(new BoxLayout(controls, BoxLayout.PAGE_AXIS));
         controls.setSize(300, 500);
 
