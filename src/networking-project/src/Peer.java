@@ -3,19 +3,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
-import java.security.PrivateKey;
+
 
 /**
- * TODO
- * Establish a static connection with the next host.
- * Displays a greeting when connecting to the next host.
+ * Representation of a Peer in the network.
+ * Listen for connections.
+ * Displays a greeting when connected to.
+ * Disconnects.
  */
-public class EstablishConnection {
+public class Peer {
     private ServerSocket peerSocket; //Treat other peers as servers for now.
     private Socket hostSocket;
     private PrintWriter out;
     private BufferedReader in;
-    private int port;
 
     public void initConnection(int port) throws IOException {
         peerSocket = new ServerSocket(port);
@@ -23,25 +23,23 @@ public class EstablishConnection {
         out = new PrintWriter(hostSocket.getOutputStream(), true); //Get the outputed stream from the connected host.
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
         String greeting = in.readLine(); // get the initial greeting from the connected host.
-        if ("hello world".equals(greeting)) {
+        if ("hello peer".equals(greeting)) {
             out.println("hello host");
         } else {
-            out.println("Unrecognized host");
+            out.println("Unrecognized greeting");
         }
     }
 
 
     /**
-     * TODO
      * Accepts a string for the prompt.
      * Sends the prompt to the statically defined next connected host.
      */
-    public void sendPrompt(String prompt) {
-
+    public String sendPrompt(String prompt) {
+    return prompt;
     }
 
     /**
-     * TODO
      * Closes the connection between the next connected host,
      * displays a message about the closed connection.
      */
@@ -52,5 +50,8 @@ public class EstablishConnection {
         peerSocket.close();
 
     }
-
+    public static void main(String[] args) throws IOException {
+        Peer helloHost=new Peer();
+        helloHost.initConnection(6666);
+    }
 }
