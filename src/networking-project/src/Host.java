@@ -27,11 +27,18 @@ public class Host {
         public void cutConnection() throws IOException {
             hostSocket.close();
         }
+
     public static void main(String[] args) throws IOException {
-        Host helloPeer = new Host();
-        helloPeer.initConnection("127.0.0.1", 6666);
+        Host host = new Host();
+        host.initConnection("127.0.0.1", 6666);
         //Three-way handshake.
-        String response = helloPeer.sendMessage("hello peer");
+        String response = host.sendMessage("hello peer");
         System.out.println(response);
+        //send the terminating char.
+        response = host.sendMessage(".");
+        System.out.println(response);
+        //Tear down the connection.
+        host.cutConnection();
+
         }
     }
