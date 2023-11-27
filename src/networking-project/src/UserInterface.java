@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class UserInterface extends JFrame {
     private  JPanel drawArea;
@@ -10,15 +12,17 @@ public class UserInterface extends JFrame {
     private JLabel timeLimit;
     private JLabel prompt;
     private JButton submit;
+    private String text;
 
     UserInterface(){
+        text =getWord();
         drawArea = new JPanel();
         canvas = new DrawArea();
         controls = new JPanel();
         connect = new JButton("connect");
         connuctionStatus = new JLabel("disconnected");
         timeLimit = new JLabel("0:00");
-        prompt = new JLabel("Prompt");
+        prompt = new JLabel(text);
         submit = new JButton("submit");
 
         canvas.setBackground(new Color(0.6f,0.6f,0.6f));
@@ -54,5 +58,28 @@ public class UserInterface extends JFrame {
         setSize(new Dimension(800, 500));
         setVisible(true);
 
+    }
+
+    public String getWord(){
+        String everything = "";
+        int rand = ((int) Math.floor(Math.random() * 6775));
+        try(BufferedReader br = new BufferedReader(new FileReader("./src/nounlist.txt"))) {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+            int i = 0;
+
+            while (line != null) {
+                if (i == rand) {
+                    sb.append(line);
+                }
+                i++;
+                line = br.readLine();
+            }
+            everything = sb.toString();
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+
+        return  everything;
     }
 }
