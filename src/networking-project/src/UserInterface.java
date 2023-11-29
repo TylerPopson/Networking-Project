@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,18 +14,21 @@ public class UserInterface extends JFrame {
     private JLabel timeLimit;
     private JLabel prompt;
     private JButton submit;
+    private String text;
     private JTextField guessTextField;
     private JPanel guessImage;
     private Timer timer;
     private long timeLeft;
 
     UserInterface(){
+        text =getWord();
         drawArea = new JPanel();
         canvas = new DrawArea();
         controls = new JPanel();
         connect = new JButton("connect");
         connuctionStatus = new JLabel("disconnected");
         timeLimit = new JLabel("0:00");
+        prompt = new JLabel(text);
 
         timeLeft = 100;
         ActionListener timeAction = new ActionListener() {
@@ -37,8 +42,6 @@ public class UserInterface extends JFrame {
         timer = new Timer(1000, timeAction);
         timer.start();
 
-
-        prompt = new JLabel("Prompt");
         submit = new JButton("submit");
 
         canvas.setBackground(new Color(0.6f,0.6f,0.6f));
@@ -75,6 +78,30 @@ public class UserInterface extends JFrame {
         setVisible(true);
 
     }
+
+  public String getWord(){
+      String everything = "";
+      int rand = ((int) Math.floor(Math.random() * 6775));
+      try(BufferedReader br = new BufferedReader(new FileReader("./src/nounlist.txt"))) {
+          StringBuilder sb = new StringBuilder();
+          String line = br.readLine();
+          int i = 0;
+
+          while (line != null) {
+              if (i == rand) {
+                  sb.append(line);
+              }
+              i++;
+              line = br.readLine();
+          }
+          everything = sb.toString();
+      }catch (Exception e){
+          System.out.println(e.toString());
+      }
+
+      return  everything;
+  }
+
     void CreateGuessMenu(){
         controls.remove(prompt);
         remove(drawArea);
