@@ -20,7 +20,7 @@ public class Host {
     }
 
     public void initConnection(String ip, int port) throws IOException {
-        hostSocket = new Socket(ip, port); //treat the connecting host as a client for now.
+        hostSocket = new Socket(ip, port); //treat this host as a client for now.
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
     }
