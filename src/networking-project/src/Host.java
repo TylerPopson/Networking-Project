@@ -20,18 +20,25 @@ public class Host {
     }
 
     public void initConnection(String ip, int port) throws IOException {
-        hostSocket = new Socket(ip, port); //treat the connecting host as a client for now.
+        hostSocket = new Socket(ip, port); //treat this host as a client for now.
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
     }
         public void cutConnection() throws IOException {
             hostSocket.close();
         }
+
     public static void main(String[] args) throws IOException {
-        Host helloPeer = new Host();
-        helloPeer.initConnection("127.0.0.1", 6666);
+        Host host = new Host();
+        host.initConnection("127.0.0.1", 6666);
         //Three-way handshake.
-        String response = helloPeer.sendMessage("hello peer");
+        String response = host.sendMessage("hello peer");
         System.out.println(response);
+        //send the terminating char.
+        response = host.sendMessage(".");
+        System.out.println(response);
+        //Tear down the connection.
+        host.cutConnection();
+
         }
     }
