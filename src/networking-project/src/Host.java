@@ -30,7 +30,7 @@ public class Host {
 
     public static void main(String[] args) throws IOException {
         Host host = new Host();
-        host.initConnection("127.0.0.1", 6666);
+        host.initConnection("149.159.255.89", 6666);
         //Three-way handshake.
         String response = host.sendMessage("hello peer");
         System.out.println(response);
