@@ -10,13 +10,14 @@ import java.io.File;
 public class DrawArea extends JPanel implements MouseMotionListener {
     int x = -1;
     int y = -1;
+    private BufferedImage image;
     DrawArea(){
         addMouseMotionListener(this);
+        this.setPreferredSize(new Dimension(500, 500));
+        image = new BufferedImage(this.getPreferredSize().width, this.getPreferredSize().height, BufferedImage.TYPE_INT_RGB);
     }
     public void saveImage(String name,String type) {
-        BufferedImage image = new BufferedImage(getWidth(),getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = image.createGraphics();
-        paint(g2);
+
         try{
             ImageIO.write(image, type, new File(name+"."+type));
         } catch (Exception e) {
@@ -28,6 +29,9 @@ public class DrawArea extends JPanel implements MouseMotionListener {
         x = mouseEvent.getX();
         y = mouseEvent.getY();
         repaint();
+        Graphics2D g2 = image.createGraphics();
+        paint(g2);
+
     }
 
     @Override
