@@ -1,9 +1,13 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class UI {
     private JFormattedTextField ipInput;
@@ -14,14 +18,21 @@ public class UI {
     private JLabel timerLabel;
     private JLabel promptLabel;
     private JPanel displayArea;
+    private JTextField guessInput;
     private Timer timer;
     private int time;
     private DrawArea canvas;
+    private Peer p;
+    private Host h;
     public UI() {
         connectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                connect();
+                try {
+                    connect();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 play();
             }
         });
@@ -42,7 +53,7 @@ public class UI {
         canvas = new DrawArea();
         canvas.setSize(new Dimension(500, 500));
         String prompt = getWord();
-        time = 60;
+        time = 20;
 
         promptLabel.setText(prompt);
         submitButton.setEnabled(true);
@@ -51,6 +62,18 @@ public class UI {
         ActionListener timeAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(time <= 1){
+                    timer.stop();
+                    //TODO
+                    //send image, and prompt
+                    canvas.saveImage("drawing", "png");
+                    try {
+                        h.sendMessage(prompt);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    guess();
+                }
                 time--;
                 timerLabel.setText(""+time);
                 timerLabel.repaint();
@@ -63,19 +86,33 @@ public class UI {
         displayArea.validate();
     }
 
-    public void connect(){
-
+    public void connect() throws IOException {
+        h = new Host();
+        h.initConnection(ipInput.getText(), 6666);
     }
 
     public void submit(){
-        canvas.saveImage("test", "png");
+
     }
-    public void init(){
+    public void init() throws IOException {
         JFrame frame = new JFrame("UI");
         frame.setContentPane(new UI().UI);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        p = new Peer();
+        p.initConnection(6666);
+    }
+
+    public void guess(){
+        try {
+            Desktop.getDesktop().open(new File("test.png" ));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        guessInput.setEnabled(true);
+        submitButton.setEnabled(true);
+
     }
 
     public String getWord(){
