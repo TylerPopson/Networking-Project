@@ -1,3 +1,5 @@
+import java.io.*;
+import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,8 +18,10 @@ public class Peer {
     private Socket hostSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private static DataOutputStream dataOutputStream = null;
+    private static DataInputStream dataInputStream = null;
 
-    public void initConnection(int port) throws IOException {
+    public void initConnection(int port) throws Exception {
         peerSocket = new ServerSocket(port);
         hostSocket = peerSocket.accept();
         out = new PrintWriter(hostSocket.getOutputStream(), true); //Get the outputted stream from the connected host.
@@ -28,8 +32,13 @@ public class Peer {
         } else {
             out.println("Unrecognized greeting");
         }
+        dataInputStream = new DataInputStream(
+                hostSocket.getInputStream());
+        dataOutputStream = new DataOutputStream(
+                hostSocket.getOutputStream());
         //Start the session.
         String inputLine;
+        receiveFile("test.png");
         while ((inputLine = in.readLine()) != null) {
             if (".".equals(inputLine)) { //termination char.
                 out.println("good bye");
@@ -39,8 +48,25 @@ public class Peer {
         }
     }
 
-
-
+    private void receiveFile(String fileName)throws Exception  {
+        int bytes = 0;
+        FileOutputStream  fileOStream = new FileOutputStream (fileName);
+        long size
+                = dataInputStream.readLong(); // read file size
+        byte[] buffer = new byte[4 * 1024];
+        while (size > 0
+                && (bytes = dataInputStream.read(
+                buffer, 0,
+                (int)Math.min(buffer.length, size)))
+                != -1) {
+            // Here we write the file using write method
+            fileOStream.write(buffer, 0, bytes);
+            size -= bytes; // read upto file size
+        }
+        // Here we received file
+        System.out.println("File is Received");
+        fileOStream.close();
+    }
 
 
     /**
@@ -62,8 +88,10 @@ public class Peer {
         peerSocket.close();
 
     }
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Peer helloHost=new Peer();
-        helloHost.initConnection(6666);
+        helloHost.initConnection(7777);
+        helloHost.receiveFile("test.png");
+
     }
 }
