@@ -7,5 +7,6 @@ public class Main {
         ui.init();
         // UserInterface ui = new UserInterface();
         // ui.CreateGuessMenu()
+
     }
 }
