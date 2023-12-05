@@ -24,6 +24,10 @@ public class UI {
     private DrawArea canvas;
     private Peer p;
     private Host h;
+    private String pronpt;
+    private String peerPrompt;
+    private  String guess;
+    private String peerGuess;
     public UI() {
         connectButton.addActionListener(new ActionListener() {
             @Override
@@ -56,7 +60,7 @@ public class UI {
         time = 20;
 
         promptLabel.setText(prompt);
-        submitButton.setEnabled(true);
+        //submitButton.setEnabled(true);
         connectButton.setEnabled(false);
 
         ActionListener timeAction = new ActionListener() {
@@ -72,6 +76,9 @@ public class UI {
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
+                    displayArea.removeAll();
+                    displayArea.revalidate();
+                    displayArea.repaint();
                     guess();
                 }
                 time--;
@@ -92,12 +99,14 @@ public class UI {
     }
 
     public void submit(){
+        guess = guessInput.getText();
+
         try {
-            h.sendMessage(guessInput.getText());
+            h.sendMessage(guess);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        //zp.sendPrompt();
+        //p.sendPrompt();
     }
     public void init() throws IOException {
         JFrame frame = new JFrame("UI");
@@ -110,11 +119,21 @@ public class UI {
     }
 
     public void guess(){
+
         try {
-            Desktop.getDesktop().open(new File("test.png" ));
+            BufferedImage img = ImageIO.read(new File("drawing.png"));
+            ImageIcon icon = new ImageIcon(img);
+            JLabel label = new JLabel(icon);
+            displayArea.add(label);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+           throw new RuntimeException(e);
         }
+
+//        try {
+//            Desktop.getDesktop().open(new File("test.png" ));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         guessInput.setEnabled(true);
         submitButton.setEnabled(true);
 
