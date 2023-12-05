@@ -92,7 +92,12 @@ public class UI {
     }
 
     public void submit(){
-
+        try {
+            h.sendMessage(guessInput.getText());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        //zp.sendPrompt();
     }
     public void init() throws IOException {
         JFrame frame = new JFrame("UI");
