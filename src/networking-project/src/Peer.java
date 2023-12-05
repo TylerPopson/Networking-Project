@@ -64,6 +64,6 @@ public class Peer {
     }
     public static void main(String[] args) throws IOException {
         Peer helloHost=new Peer();
-        helloHost.initConnection(6666);
+        helloHost.initConnection(7777);
     }
 }
