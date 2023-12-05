@@ -24,6 +24,7 @@ public class DrawArea extends JPanel implements MouseMotionListener {
             e.printStackTrace();
         }
     }
+
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         x = mouseEvent.getX();

@@ -96,10 +96,10 @@ public class Peer {
         peerSocket.close();
 
     }
+
     public static void main(String[] args) throws Exception {
         Peer peer = new Peer();
         peer.initConnection(7777);
         peer.receiveImage();
-
     }
 }
