@@ -115,7 +115,11 @@ public class UI {
         frame.pack();
         frame.setVisible(true);
         p = new Peer();
-        p.initConnection(6666);
+        try {
+            p.initConnection(6666);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void guess(){
