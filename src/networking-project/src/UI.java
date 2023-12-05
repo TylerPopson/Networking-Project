@@ -26,8 +26,10 @@ public class UI {
     private Host h;
     private String pronpt;
     private String peerPrompt;
-    private  String guess;
+    private String guess;
     private String peerGuess;
+
+    // add event listeners for button presses
     public UI() {
         connectButton.addActionListener(new ActionListener() {
             @Override
@@ -43,30 +45,47 @@ public class UI {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
                 submit();
-
             }
         });
-
-        
     }
 
-    public void play(){
+    //create the ui and start up peer connection
+    public void init() throws IOException {
+        JFrame frame = new JFrame("UI");
+        frame.setContentPane(new UI().UI);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+        p = new Peer();
+        try {
+            p.initConnection(6666);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    // start a host connecting to a peer based on the ip typed by the user
+    public void connect() throws IOException {
+        h = new Host();
+        h.initConnection(ipInput.getText(), 6666);
+    }
+
+    // start the gameplay
+    // gets a prompt, starts a timer, and makes a canvas to draw on
+    // play ends when the timer = 0
+    public void play() {
         canvas = new DrawArea();
         canvas.setSize(new Dimension(500, 500));
         String prompt = getWord();
         time = 20;
-
         promptLabel.setText(prompt);
-        //submitButton.setEnabled(true);
         connectButton.setEnabled(false);
 
         ActionListener timeAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(time <= 1){
+                if (time <= 1) {
                     timer.stop();
                     //TODO
                     //send image, and prompt
@@ -82,7 +101,7 @@ public class UI {
                     guess();
                 }
                 time--;
-                timerLabel.setText(""+time);
+                timerLabel.setText("" + time);
                 timerLabel.repaint();
             }
         };
@@ -93,64 +112,41 @@ public class UI {
         displayArea.validate();
     }
 
-    public void connect() throws IOException {
-        h = new Host();
-        h.initConnection(ipInput.getText(), 6666);
-    }
-
-    public void submit(){
+    // submit guess of image
+    public void submit() {
         guess = guessInput.getText();
-
         try {
             h.sendMessage(guess);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        //p.sendPrompt();
-    }
-    public void init() throws IOException {
-        JFrame frame = new JFrame("UI");
-        frame.setContentPane(new UI().UI);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        p = new Peer();
-        try {
-            p.initConnection(6666);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    public void guess(){
-
+    // set the form up for guessing what the drawing is
+    // loads other users drawing
+    // replaces the canvas with it ahd enables the guess field
+    public void guess() {
         try {
             BufferedImage img = ImageIO.read(new File("drawing.png"));
             ImageIcon icon = new ImageIcon(img);
             JLabel label = new JLabel(icon);
             displayArea.add(label);
         } catch (IOException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
-
-//        try {
-//            Desktop.getDesktop().open(new File("test.png" ));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
         guessInput.setEnabled(true);
         submitButton.setEnabled(true);
 
     }
 
-    public String getWord(){
+    // helper function that loads a file of words and picks a random one to use for the prompt
+    public String getWord() {
         String everything = "";
         int rand = ((int) Math.floor(Math.random() * 6775));
-        try(BufferedReader br = new BufferedReader(new FileReader("./src/nounlist.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("./src/nounlist.txt"))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
             int i = 0;
-
             while (line != null) {
                 if (i == rand) {
                     sb.append(line);
@@ -159,11 +155,10 @@ public class UI {
                 line = br.readLine();
             }
             everything = sb.toString();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
-
-        return  everything;
+        return everything;
     }
 
     public static void main(String[] args) {
