@@ -5,8 +5,5 @@ public class Main {
     public static void main(String[] args) throws IOException {
         UI ui = new UI();
         ui.init();
-        // UserInterface ui = new UserInterface();
-        // ui.CreateGuessMenu()
-
     }
 }
