@@ -1,3 +1,5 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 
@@ -10,12 +12,14 @@ public class Host {
     private Socket hostSocket; //Peer to reply to.
     private PrintWriter out;
     private BufferedReader in;
-    private static DataOutputStream dataOutputStream = null;
-    private static DataInputStream dataInputStream = null;
+    private BufferedImage img;
+    private static DataOutputStream dos = null;
+    private static DataInputStream dis = null;
 
     public String sendMessage(String prompt) throws IOException {
         out.println(prompt);
-        return in.readLine();
+        String a = in.readLine();
+        return a;
     }
     void sendFile(String path) throws FileNotFoundException, IOException {
     int bytes = 0;
@@ -24,17 +28,33 @@ public class Host {
         FileInputStream fileIStream = new FileInputStream(file);
 
         //send file to server
-        dataOutputStream.writeLong(file.length());
+        dos.writeLong(file.length());
         //Buffer file
         byte[] buffer = new byte [4 * 1024];
         while ((bytes = fileIStream.read(buffer))
                 != -1){
             //send file over socket.
-            dataOutputStream.write(buffer, 0, bytes);
-            dataOutputStream.flush();
+            dos.write(buffer, 0, bytes);
+            dos.flush();
         }
         // close the file here
         fileIStream.close();
+    }
+    void sendImage (String path) throws FileNotFoundException, IOException {
+        System.out.println("Reading image from disk. ");
+        img = ImageIO.read(new File(path));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        ImageIO.write(img, "png", baos);
+        baos.flush();
+
+        byte[] bytes = baos.toByteArray();
+        baos.close();
+        //Send the image.
+        dos.writeInt(bytes.length);
+        dos.write(bytes, 0, bytes.length);
+        //close the output.
+        System.out.println("Image sent");
     }
 
 
@@ -43,8 +63,8 @@ public class Host {
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
         //Get stream for file transfer.
-        dataInputStream = new DataInputStream (hostSocket.getInputStream());
-        dataOutputStream = new DataOutputStream(hostSocket.getOutputStream());
+        dis = new DataInputStream (hostSocket.getInputStream());
+        dos = new DataOutputStream(hostSocket.getOutputStream());
     }
         public void cutConnection() throws IOException {
             hostSocket.close();
@@ -56,8 +76,8 @@ public class Host {
         //Three-way handshake.
         String response = host.sendMessage("hello peer");
         System.out.println(response);
+        host.sendImage("C:/Users/Zach/IdeaProjects/Networking-Project/src/networking-project/test.png");
         //send the terminating char.
-        host.sendFile("C:/Users/Zach/IdeaProjects/Networking-Project/src/networking-project/test.png");
         response = host.sendMessage(".");
         System.out.println(response);
 

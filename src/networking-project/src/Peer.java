@@ -1,3 +1,5 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.io.BufferedReader;
@@ -18,8 +20,8 @@ public class Peer {
     private Socket hostSocket;
     private PrintWriter out;
     private BufferedReader in;
-    private static DataOutputStream dataOutputStream = null;
-    private static DataInputStream dataInputStream = null;
+    private static DataOutputStream dos = null;
+    private static DataInputStream dis = null;
 
     public void initConnection(int port) throws Exception {
         peerSocket = new ServerSocket(port);
@@ -32,13 +34,12 @@ public class Peer {
         } else {
             out.println("Unrecognized greeting");
         }
-        dataInputStream = new DataInputStream(
+        dis = new DataInputStream(
                 hostSocket.getInputStream());
-        dataOutputStream = new DataOutputStream(
+        dos = new DataOutputStream(
                 hostSocket.getOutputStream());
         //Start the session.
         String inputLine;
-        receiveFile("test.png");
         while ((inputLine = in.readLine()) != null) {
             if (".".equals(inputLine)) { //termination char.
                 out.println("good bye");
@@ -52,10 +53,10 @@ public class Peer {
         int bytes = 0;
         FileOutputStream  fileOStream = new FileOutputStream (fileName);
         long size
-                = dataInputStream.readLong(); // read file size
+                = dis.readLong(); // read file size
         byte[] buffer = new byte[4 * 1024];
         while (size > 0
-                && (bytes = dataInputStream.read(
+                && (bytes = dis.read(
                 buffer, 0,
                 (int)Math.min(buffer.length, size)))
                 != -1) {
@@ -67,7 +68,14 @@ public class Peer {
         System.out.println("File is Received");
         fileOStream.close();
     }
-
+    public void receiveImage()throws FileNotFoundException, IOException, EOFException {
+        int len = dis.readInt(); // causing eof issues.
+        //find image size.
+        byte[] data = new byte[len];
+        dis.readFully(data);
+        InputStream ian = new ByteArrayInputStream(data);
+        BufferedImage bImage = ImageIO.read(ian);
+    }
 
     /**
      * Accepts a string for the prompt.
@@ -89,9 +97,9 @@ public class Peer {
 
     }
     public static void main(String[] args) throws Exception {
-        Peer helloHost=new Peer();
-        helloHost.initConnection(7777);
-        helloHost.receiveFile("test.png");
+        Peer peer = new Peer();
+        peer.initConnection(7777);
+        peer.receiveImage();
 
     }
 }
