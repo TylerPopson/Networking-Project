@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class UI {
     private JFormattedTextField ipInput;
@@ -94,10 +95,6 @@ public class UI {
                     timerLabel.setText("");
                     timerLabel.repaint();
                     img = canvas.getImage();
-                    //TODO
-                    //send image
-
-                    // change to recieved image later
                     peerImg = canvas.getImage();
 
                     try {
@@ -106,7 +103,13 @@ public class UI {
                         throw new RuntimeException(ex);
                     }
 
-                    peerPrompt = "TODO";
+                    try {
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                    peerPrompt = p.getrPrompt();
                     displayArea.removeAll();
                     displayArea.revalidate();
                     displayArea.repaint();
@@ -135,9 +138,12 @@ public class UI {
             throw new RuntimeException(e);
         }
 
-        // TODO
-        // get guess
-        peerGuess = "TODO";
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        peerGuess = p.getrGuess();
 
         PeerGuessLabel.setText(peerGuess);
         PeerGuessLabel.revalidate();
