@@ -57,6 +57,7 @@ public class UI {
 
     //create the ui and start up peer connection
     public void init() throws IOException {
+
         JFrame frame = new JFrame("UI");
         frame.setContentPane(new UI().UI);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,6 +75,7 @@ public class UI {
     public void connect() throws IOException {
         h = new Host();
         h.initConnection(ipInput.getText(), 6666);
+        h.sendMessage("hello peer");
     }
 
     // start the gameplay
