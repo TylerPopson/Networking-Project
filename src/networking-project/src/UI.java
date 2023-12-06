@@ -24,10 +24,12 @@ public class UI {
     private DrawArea canvas;
     private Peer p;
     private Host h;
-    private String pronpt;
+    private String prompt;
     private String peerPrompt;
     private String guess;
     private String peerGuess;
+    private BufferedImage img;
+    private BufferedImage peerImg;
 
     // add event listeners for button presses
     public UI() {
@@ -77,7 +79,7 @@ public class UI {
     public void play() {
         canvas = new DrawArea();
         canvas.setSize(new Dimension(500, 500));
-        String prompt = getWord();
+        prompt = getWord();
         time = 20;
         promptLabel.setText(prompt);
         connectButton.setEnabled(false);
@@ -87,14 +89,20 @@ public class UI {
             public void actionPerformed(ActionEvent e) {
                 if (time <= 1) {
                     timer.stop();
+                    img = canvas.getImage();
                     //TODO
-                    //send image, and prompt
-                    canvas.saveImage("drawing", "png");
+                    //send image
+
+                    // change to recieved image later
+                    peerImg = canvas.getImage();
+
                     try {
                         h.sendMessage(prompt);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
+
+                    peerPrompt = "TODO";
                     displayArea.removeAll();
                     displayArea.revalidate();
                     displayArea.repaint();
@@ -120,6 +128,14 @@ public class UI {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        // TODO
+        // get guess
+        peerGuess = "TODO";
+
+        Results r = new Results();
+        r.init();
+        r.update(prompt, guess, peerPrompt, peerGuess, img, peerImg);
     }
 
     // set the form up for guessing what the drawing is

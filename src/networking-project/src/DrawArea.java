@@ -25,6 +25,10 @@ public class DrawArea extends JPanel implements MouseMotionListener {
         }
     }
 
+    public BufferedImage getImage() {
+        return image;
+    }
+
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         x = mouseEvent.getX();
