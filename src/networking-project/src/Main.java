@@ -6,8 +6,8 @@ public class Main {
 //        UI ui = new UI();
 //        ui.init();
         TestPeer testPeer = new TestPeer();
-        TestHost testHost = new TestHost();
+//        TestHost testHost = new TestHost();
         testPeer.init();
-        testHost.init();
+//        testHost.init();
     }
 }

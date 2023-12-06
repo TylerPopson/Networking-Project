@@ -15,7 +15,7 @@ public class TestHost {
     public void init() throws Exception{
         Socket soc;
         BufferedImage img = null;
-        soc=new Socket("localhost",4000);
+        soc=new Socket("192.168.0.11",4000);
         System.out.println("Client is running. ");
 
         try {
