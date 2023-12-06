@@ -11,17 +11,16 @@ import javax.imageio.ImageIO;
 public class TestHost {
     //This will be able to send the image and close the connection.
     public static void main(String args[]) throws Exception {
-        init();
     }
-    public static void init() throws Exception{
+    public void init() throws Exception{
         Socket soc;
         BufferedImage img = null;
-        soc=new Socket("localhost",4000);
+        soc=new Socket("192.168.0.11",4000);
         System.out.println("Client is running. ");
 
         try {
             System.out.println("Reading image from disk.");
-            img = ImageIO.read(new File("C:/Users/Zach/IdeaProjects/Networking-Project/src/networking-project/drawing.png"));
+            img = ImageIO.read(new File("C:/Users/Zach's PC/IdeaProjects/Networking-Project/src/networking-project/drawing.png"));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             ImageIO.write(img, "jpg", baos);
