@@ -173,22 +173,9 @@ public class UI {
     // helper function that loads a file of words and picks a random one to use for the prompt
     public String getWord() {
         String everything = "";
-        int rand = ((int) Math.floor(Math.random() * 6775));
-        try (BufferedReader br = new BufferedReader(new FileReader("./src/nounlist.txt"))) {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-            int i = 0;
-            while (line != null) {
-                if (i == rand) {
-                    sb.append(line);
-                }
-                i++;
-                line = br.readLine();
-            }
-            everything = sb.toString();
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
+        String[] words = {"Person", "Hat", "Cat", "Piano","Tea","Computer"};
+        int rand = ((int) Math.floor(Math.random() * words.length));
+        everything = words[rand];
         return everything;
     }
 
