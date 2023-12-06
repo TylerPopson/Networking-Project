@@ -1,11 +1,9 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -19,6 +17,10 @@ public class UI {
     private JLabel promptLabel;
     private JPanel displayArea;
     private JTextField guessInput;
+    private JLabel PeerPromptLabel;
+    private JLabel PeerGuessLabel;
+    private JLabel peerPromptLabel;
+    private JLabel peerGuessLabel;
     private Timer timer;
     private int time;
     private DrawArea canvas;
@@ -89,6 +91,8 @@ public class UI {
             public void actionPerformed(ActionEvent e) {
                 if (time <= 1) {
                     timer.stop();
+                    timerLabel.setText("");
+                    timerLabel.repaint();
                     img = canvas.getImage();
                     //TODO
                     //send image
@@ -106,6 +110,8 @@ public class UI {
                     displayArea.removeAll();
                     displayArea.revalidate();
                     displayArea.repaint();
+                    promptLabel.setText("");
+                    promptLabel.repaint();
                     guess();
                 }
                 time--;
@@ -133,23 +139,26 @@ public class UI {
         // get guess
         peerGuess = "TODO";
 
-        Results r = new Results();
-        r.init();
-        r.update(prompt, guess, peerPrompt, peerGuess, img, peerImg);
+        PeerGuessLabel.setText(peerGuess);
+        PeerGuessLabel.revalidate();
+        PeerGuessLabel.repaint();
+
+        PeerPromptLabel.setText(peerPrompt);
+        PeerPromptLabel.repaint();
+
+        timerLabel.setText(prompt);
+        timerLabel.repaint();
+
+        promptLabel.setText(guess);
     }
 
     // set the form up for guessing what the drawing is
     // loads other users drawing
     // replaces the canvas with it ahd enables the guess field
     public void guess() {
-        try {
-            BufferedImage img = ImageIO.read(new File("drawing.png"));
-            ImageIcon icon = new ImageIcon(img);
-            JLabel label = new JLabel(icon);
-            displayArea.add(label);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ImageIcon icon = new ImageIcon(img);
+        JLabel label = new JLabel(icon);
+        displayArea.add(label);
         guessInput.setEnabled(true);
         submitButton.setEnabled(true);
 
