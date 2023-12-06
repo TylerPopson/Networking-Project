@@ -1,11 +1,9 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -19,15 +17,21 @@ public class UI {
     private JLabel promptLabel;
     private JPanel displayArea;
     private JTextField guessInput;
+    private JLabel PeerPromptLabel;
+    private JLabel PeerGuessLabel;
+    private JLabel peerPromptLabel;
+    private JLabel peerGuessLabel;
     private Timer timer;
     private int time;
     private DrawArea canvas;
     private Peer p;
     private Host h;
-    private String pronpt;
+    private String prompt;
     private String peerPrompt;
     private String guess;
     private String peerGuess;
+    private BufferedImage img;
+    private BufferedImage peerImg;
 
     // add event listeners for button presses
     public UI() {
@@ -77,7 +81,7 @@ public class UI {
     public void play() {
         canvas = new DrawArea();
         canvas.setSize(new Dimension(500, 500));
-        String prompt = getWord();
+        prompt = getWord();
         time = 20;
         promptLabel.setText(prompt);
         connectButton.setEnabled(false);
@@ -87,17 +91,27 @@ public class UI {
             public void actionPerformed(ActionEvent e) {
                 if (time <= 1) {
                     timer.stop();
+                    timerLabel.setText("");
+                    timerLabel.repaint();
+                    img = canvas.getImage();
                     //TODO
-                    //send image, and prompt
-                    canvas.saveImage("drawing", "png");
+                    //send image
+
+                    // change to recieved image later
+                    peerImg = canvas.getImage();
+
                     try {
                         h.sendMessage(prompt);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
+
+                    peerPrompt = "TODO";
                     displayArea.removeAll();
                     displayArea.revalidate();
                     displayArea.repaint();
+                    promptLabel.setText("");
+                    promptLabel.repaint();
                     guess();
                 }
                 time--;
@@ -120,20 +134,31 @@ public class UI {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        // TODO
+        // get guess
+        peerGuess = "TODO";
+
+        PeerGuessLabel.setText(peerGuess);
+        PeerGuessLabel.revalidate();
+        PeerGuessLabel.repaint();
+
+        PeerPromptLabel.setText(peerPrompt);
+        PeerPromptLabel.repaint();
+
+        timerLabel.setText(prompt);
+        timerLabel.repaint();
+
+        promptLabel.setText(guess);
     }
 
     // set the form up for guessing what the drawing is
     // loads other users drawing
     // replaces the canvas with it ahd enables the guess field
     public void guess() {
-        try {
-            BufferedImage img = ImageIO.read(new File("drawing.png"));
-            ImageIcon icon = new ImageIcon(img);
-            JLabel label = new JLabel(icon);
-            displayArea.add(label);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ImageIcon icon = new ImageIcon(img);
+        JLabel label = new JLabel(icon);
+        displayArea.add(label);
         guessInput.setEnabled(true);
         submitButton.setEnabled(true);
 
