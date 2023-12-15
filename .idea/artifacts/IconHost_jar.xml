@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="IconHost:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/IconHost_jar</output-path>
+    <root id="archive" name="Networking-Project.jar">
+      <element id="module-output" name="Networking-Project" />
+    </root>
+  </artifact>
+</component>
