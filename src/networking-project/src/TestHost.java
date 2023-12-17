@@ -11,11 +11,13 @@ import javax.imageio.ImageIO;
 public class TestHost {
     //This will be able to send the image and close the connection.
     public static void main(String args[]) throws Exception {
+        TestHost testHost = new TestHost();
+        TestHost.init();
     }
-    public void init() throws Exception{
+    public static void init() throws Exception{
         Socket soc;
         BufferedImage img = null;
-        soc=new Socket("192.168.0.11",4000);
+        soc=new Socket("127.0.0.1",4000);
         System.out.println("Client is running. ");
 
         try {

@@ -13,7 +13,8 @@ public class TestPeer {
     //This will be able to accept the image, although the connection will be closed.
 
     public static void main(String  args[]) throws Exception {
-
+        TestPeer testPeer = new TestPeer();
+        testPeer.init();
     }
     public void init() throws Exception {
         ServerSocket server = null;
@@ -50,4 +51,5 @@ public class TestPeer {
     public BufferedImage getbImage(){
         return bImage;
     }
+
 }
