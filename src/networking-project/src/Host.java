@@ -50,13 +50,14 @@ public class Host {
         Host host = new Host();
         host.initConnection("127.0.0.1", 7777);
         //Three-way handshake.
-        String response = host.sendMessage("hello peer");
+        String response = host.sendMessage("hello host");
+        System.out.println(response);
+        response = host.sendMessage("stop copying me");
         System.out.println(response);
         //host.sendImage3("C:/Users/Zach/IdeaProjects/Networking-Project/src/networking-project/test.png");
         //send the terminating char.
         response = host.sendMessage(".");
         System.out.println(response);
-
         //Tear down the connection.
         host.cutConnection();
 
