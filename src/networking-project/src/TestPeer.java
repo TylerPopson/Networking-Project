@@ -21,10 +21,10 @@ public class TestPeer {
         Socket socket;
         server = new ServerSocket(4000);
         System.out.println("Server Waiting for image");
-
+        //client socket is the first connection request.
         socket = server.accept();
         System.out.println("Client connected.");
-
+        //begin processing the stream.
         InputStream in = socket.getInputStream();
         DataInputStream dis = new DataInputStream(in);
 
@@ -38,7 +38,7 @@ public class TestPeer {
 
         InputStream ian = new ByteArrayInputStream(data);
         bImage = ImageIO.read(ian);
-
+        //displays the image.
         JFrame f = new JFrame("Server");
         ImageIcon icon = new ImageIcon(bImage);
         JLabel l = new JLabel();
@@ -48,6 +48,7 @@ public class TestPeer {
         f.pack();
         f.setVisible(true);
     }
+    //return the buffered image.
     public BufferedImage getbImage(){
         return bImage;
     }
