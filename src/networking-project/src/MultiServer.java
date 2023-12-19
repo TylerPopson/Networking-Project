@@ -1,3 +1,5 @@
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
@@ -13,7 +15,6 @@ public class MultiServer {
     //Server representation
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
-    private BufferedImage bImage = null;
     public static void main(String  args[]) throws Exception {
         MultiServer server = new MultiServer();
         server.start(7777);
@@ -23,8 +24,10 @@ public class MultiServer {
         serverSocket = new ServerSocket(port);
         //Accept a connection.
         while (true)
+            //Handle an image request.
+            new ImageClientHandler(serverSocket.accept()).start();
             //Handle an echo request.
-            new EchoClientHandler(serverSocket.accept()).start();
+            //new EchoClientHandler(serverSocket.accept()).start();
     }
 
     public void stop() throws IOException {
@@ -67,6 +70,44 @@ public class MultiServer {
         }
     }
     private static class ImageClientHandler extends Thread {
+        private BufferedImage bImage = null;
+        private Socket clientSocket;
 
+        public ImageClientHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
+
+        public void run() {
+            try {
+                //begin processing the stream.
+                DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
+                int len = dis.readInt();
+                System.out.println("Image Size: " + len / 1024 + "KB");
+
+                //deallocate resources.
+                byte[] data = new byte[len];
+                dis.readFully(data);
+                dis.close();
+                clientSocket.close();
+
+                InputStream ian = new ByteArrayInputStream(data);
+                bImage = ImageIO.read(ian);
+
+                //displays the image.
+                JFrame f = new JFrame("Server");
+                ImageIcon icon = new ImageIcon(bImage);
+                JLabel l = new JLabel();
+
+                l.setIcon(icon);
+                f.add(l);
+                f.pack();
+                f.setVisible(true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        public BufferedImage getbImage() {
+            return bImage;
+        }
     }
 }
