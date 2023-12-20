@@ -17,7 +17,7 @@ public class MultiServer {
     //Buffered Image for holding image.
     public static void main(String  args[]) throws Exception {
         MultiServer server = new MultiServer();
-        server.start(7777);
+        server.start(4000);
     }
 
     public void start(int port) throws IOException {
