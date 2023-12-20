@@ -1,18 +1,21 @@
-import javax.swing.*;
 import java.net.*;
-import java.awt.image.*;
-import javax.imageio.*;
 import java.io.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import javax.imageio.ImageIO;
-public class TestHost {
-    //This will be able to send the image and close the connection.
+public class MultiClient {
+    /**
+     * This will be able to send the image and close the connection.
+     * Client-Side representation able to send multiple requests to the server.
+     * Reads an image from the disk.
+     * Sends the image as a stream to the server.
+     * Closes the connection.
+     */
+
     public static void main(String args[]) throws Exception {
-        TestHost testHost = new TestHost();
-        TestHost.init();
+        MultiClient client = new MultiClient();
+        init();
     }
     public static void init() throws Exception{
         Socket soc;
