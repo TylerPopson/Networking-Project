@@ -15,7 +15,7 @@ public class MultiServer {
     //Server representation
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
-    public static void main(String  args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
         server.start(7777);
     }
