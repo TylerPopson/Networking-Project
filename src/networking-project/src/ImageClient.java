@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import javax.imageio.ImageIO;
-public class MultiClient {
+public class ImageClient {
     /**
      * This will be able to send the image and close the connection.
      * Client-Side representation able to send multiple requests to the server.
@@ -14,7 +14,7 @@ public class MultiClient {
      */
 
     public static void main(String args[]) throws Exception {
-        MultiClient client = new MultiClient();
+        ImageClient client = new ImageClient();
         init();
     }
     public static void init() throws Exception{

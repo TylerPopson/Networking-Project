@@ -8,7 +8,7 @@ import java.io.IOException;
  * Connects to the statically defined peer in the network.
  * Disconnects.
  */
-public class Host {
+public class StringClient {
     private Socket hostSocket; //Peer to reply to.
     private PrintWriter out;
     private BufferedReader in;
@@ -16,9 +16,9 @@ public class Host {
     private static DataOutputStream dos = null;
     private static DataInputStream dis = null;
 
-    public String sendMessage(String prompt) throws IOException {
+    public String sendMessage(String msg) throws IOException {
         out = new PrintWriter(hostSocket.getOutputStream(), true);
-        out.println(prompt);
+        out.println(msg);
         String a = in.readLine();
         return a;
     }
@@ -36,19 +36,19 @@ public class Host {
         }
 
     public static void main(String[] args) throws Exception {
-        Host host = new Host();
-        host.initConnection("127.0.0.1", 7777);
+        StringClient stringClient = new StringClient();
+        stringClient.initConnection("127.0.0.1", 7777);
         //Three-way handshake.
-        String response = host.sendMessage("hello host");
+        String response = stringClient.sendMessage("hello host");
         System.out.println(response);
-        response = host.sendMessage("stop copying me");
+        response = stringClient.sendMessage("stop copying me");
         System.out.println(response);
         //host.sendImage3("C:/Users/Zach/IdeaProjects/Networking-Project/src/networking-project/test.png");
         //send the terminating char.
-        response = host.sendMessage(".");
+        response = stringClient.sendMessage(".");
         System.out.println(response);
         //Tear down the connection.
-        host.cutConnection();
+        stringClient.cutConnection();
 
         }
     }

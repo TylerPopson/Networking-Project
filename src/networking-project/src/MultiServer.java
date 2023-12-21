@@ -12,13 +12,13 @@ public class MultiServer {
      * Handles clients reconnecting.
      * Creates a socket for every client.
      * Uses "." char to terminate connection.
-     * Accepts a request to process and store an image.
+     * Currently only accepts string requests.
      * TODO
      * Allow multiple requests.
      */
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
-    public static void main(String  args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
         server.start(4000);
     }
@@ -28,9 +28,9 @@ public class MultiServer {
         //Accept a connection.
         while (true)
             //Handle an image request.
-            new ImageClientHandler(serverSocket.accept()).start();
+            //new ImageClientHandler(serverSocket.accept()).start();
             //Handle an echo request.
-            //new EchoClientHandler(serverSocket.accept()).start();
+            new EchoClientHandler(serverSocket.accept()).start();
     }
 
     public void stop() throws IOException {
