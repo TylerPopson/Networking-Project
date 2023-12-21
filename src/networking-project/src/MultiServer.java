@@ -4,20 +4,23 @@ import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
 
-/**
- * Handles multiple clients
- * Creates a socket for every client
- * Uses "." char to terminate connection.
- * TODO
- * Implement handling for image sent.
- */
+
 public class MultiServer {
-    //Server representation
+    /**
+     * Server-Side representation.
+     * Handles multiple clients.
+     * Handles clients reconnecting.
+     * Creates a socket for every client.
+     * Uses "." char to terminate connection.
+     * Accepts a request to process and store an image.
+     * TODO
+     * Allow multiple requests.
+     */
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
     public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
-        server.start(7777);
+        server.start(4000);
     }
 
     public void start(int port) throws IOException {

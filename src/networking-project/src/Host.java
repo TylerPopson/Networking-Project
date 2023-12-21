@@ -1,13 +1,8 @@
-import javax.swing.*;
 import java.net.*;
-import java.awt.image.*;
-import javax.imageio.*;
 import java.io.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
+
 /**
  * Representation of a Host.
  * Connects to the statically defined peer in the network.
@@ -27,12 +22,6 @@ public class Host {
         String a = in.readLine();
         return a;
     }
-//
-    public void sendImage3 (String path) throws Exception{
-        TestHost hostS = new TestHost();
-        hostS.init();
-    }
-
 
     public void initConnection(String ip, int port) throws IOException {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.
