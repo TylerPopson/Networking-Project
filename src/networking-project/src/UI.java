@@ -3,8 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +24,7 @@ public class UI {
     private int time;
     private DrawArea canvas;
     private Peer p;
-    private Host h;
+    private StringClient h;
     private String prompt;
     private String peerPrompt;
     private String guess;
@@ -73,7 +71,7 @@ public class UI {
 
     // start a host connecting to a peer based on the ip typed by the user
     public void connect() throws IOException {
-        h = new Host();
+        h = new StringClient();
         h.initConnection(ipInput.getText(), 6666);
         h.sendMessage("hello peer");
     }
