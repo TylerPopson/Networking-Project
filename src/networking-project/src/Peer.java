@@ -83,12 +83,6 @@ public class Peer {
         f.pack();
         f.setVisible(true);
     }
-    public void receiveImage3() throws Exception{
-        TestPeer peerS = new TestPeer();
-        peerS.init();
-
-
-    }
 
 
     /**
