@@ -30,11 +30,60 @@ public class MultiServer {
             //Handle an image request.
             //new ImageClientHandler(serverSocket.accept()).start();
             //Handle an echo request.
-            new EchoClientHandler(serverSocket.accept()).start();
+            new ControlClientHandler(serverSocket.accept()).start();
     }
 
     public void stop() throws IOException {
         serverSocket.close();
+    }
+
+    /**
+     * Accepts a new connection and blocks until service is specified.
+     * creates another thread based on the service needed.
+     * Services are determined based on chars.
+     * Ends after assigning thread.
+     */
+    private static class ControlClientHandler extends Thread {
+        private Socket clientSocket;
+        private PrintWriter out;
+        private BufferedReader in;
+        //constructor
+        public ControlClientHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
+
+        public void run() {
+            try {
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                in = new BufferedReader(
+                        new InputStreamReader(clientSocket.getInputStream()));
+                String inputLine;
+                //control section, block for a character specifying service needed.
+                while ((inputLine = in.readLine()) != null) {
+                    //String service needed.
+                    if ("E".equals(inputLine)) {
+                        new PrintClientHandler().start();
+                        //new EchoClientHandler(clientSocket).start();
+                        out.println("String Service started");
+                        break;
+                    }
+                }
+                //close resources just in case.
+                in.close();
+                clientSocket.close();
+            }catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            }
+
+        }
+    private static class PrintClientHandler extends Thread {
+        public void run() {
+            for (int i = 0; i < 10; i++){
+                System.out.println("hello world");
+            }
+        }
     }
 
     /**
