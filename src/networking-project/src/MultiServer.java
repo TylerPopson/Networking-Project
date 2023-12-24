@@ -62,13 +62,13 @@ public class MultiServer {
                 //control section, block for a character specifying service needed.
                 while ((inputLine = in.readLine()) != null) {
                     //String service needed.
-                    if ("E".equals(inputLine)) {
-                        new PrintClientHandler().start();
-                        //new EchoClientHandler(clientSocket).start();
+                    if ("E".equals(inputLine )) {
+                        new EchoClientHandler(clientSocket).start();
                         out.println("String Service started");
                         break;
                     }
                 }
+
                 //close resources just in case.
                 in.close();
                 clientSocket.close();
@@ -78,14 +78,6 @@ public class MultiServer {
             }
 
         }
-    private static class PrintClientHandler extends Thread {
-        public void run() {
-            for (int i = 0; i < 10; i++){
-                System.out.println("hello world");
-            }
-        }
-    }
-
     /**
      * Handler for an echo request
      * Uses threads
