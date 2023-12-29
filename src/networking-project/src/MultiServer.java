@@ -19,6 +19,7 @@ public class MultiServer {
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
     private static BufferedImage bImage = null;
+
     public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
         server.start(4000);
@@ -51,7 +52,8 @@ public class MultiServer {
         }
         in.close();
         out.close();
-}
+    }
+
     public void stop() throws IOException {
         serverSocket.close();
     }
@@ -81,6 +83,7 @@ public class MultiServer {
         f.setVisible(true);
 
     }
+
     public BufferedImage getbImage() {
         return bImage;
     }
@@ -95,6 +98,7 @@ public class MultiServer {
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
+
         //constructor
         public ControlClientHandler(Socket socket) {
             this.clientSocket = socket;
@@ -125,70 +129,9 @@ public class MultiServer {
                 in.close();
                 out.close();
                 clientSocket.close();
-            }catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            }
-
-        }
-    /**
-     * Handler for an echo request
-     * Uses threads
-     */
-    private static class EchoClientHandler extends Thread {
-        private Socket clientSocket;
-        private PrintWriter out;
-        private BufferedReader in;
-
-        public EchoClientHandler(Socket socket) {
-            this.clientSocket = socket;
-        }
-
-        public void run() {
-            try {
-                EchoHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
-            clientSocket.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
-//    private class ImageClientHandler extends Thread {
-//        private Socket clientSocket;
-//
-//        public ImageClientHandler(Socket socket) {
-//            this.clientSocket = socket;
-//        }
-//
-//        public void run() {
-//            try {
-//                //begin processing the stream.
-//                DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-//                int len = dis.readInt();
-//                System.out.println("Image Size: " + len / 1024 + "KB");
-//
-//                //deallocate resources.
-//                byte[] data = new byte[len];
-//                dis.readFully(data);
-//                dis.close();
-//                clientSocket.close();
-//
-//                InputStream ian = new ByteArrayInputStream(data);
-//                bImage = ImageIO.read(ian);
-//
-//                //displays the image.
-//                JFrame f = new JFrame("Server");
-//                ImageIcon icon = new ImageIcon(bImage);
-//                JLabel l = new JLabel();
-//
-//                l.setIcon(icon);
-//                f.add(l);
-//                f.pack();
-//                f.setVisible(true);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//
-//    }
 }

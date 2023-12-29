@@ -16,23 +16,22 @@ public class ImageClient {
      * Closes the connection.
      */
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         ImageClient client = new ImageClient();
         client.init("127.0.0.1", 4000);
     }
     public String sendMessage(String msg) throws IOException {
         out = new PrintWriter(soc.getOutputStream(), true);
         out.println(msg);
-        String a = in.readLine();
-        return a;
+        return in.readLine();
     }
     /**
-     * @param ip
-     * @param port
-     * @throws Exception
+     * @param ip for server address.
+     * @param port for server
+     * @throws Exception all exceptions
      */
     public void init(String ip, int port) throws Exception{
-        BufferedImage img = null;
+        BufferedImage img;
         soc = new Socket(ip, port);
         System.out.println("Client is running. ");
         in = new BufferedReader(new InputStreamReader(soc.getInputStream()));
