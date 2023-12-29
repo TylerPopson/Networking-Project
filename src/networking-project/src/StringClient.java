@@ -1,6 +1,5 @@
 import java.net.*;
 import java.io.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
@@ -24,7 +23,7 @@ public class StringClient {
 //       return sendMessage("E");
 //    }
 
-    public void initConnection(String ip, int port) throws IOException {
+    public void init(String ip, int port) throws IOException {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
@@ -36,7 +35,7 @@ public class StringClient {
     public static void main(String[] args) throws Exception {
         StringClient stringClient = new StringClient();
         //Three-way handshake.
-        stringClient.initConnection("127.0.0.1", 4000);
+        stringClient.init("127.0.0.1", 4000);
         //Specify strings will be sent.
 //        stringClient.startString();
         String response = stringClient.sendMessage("hello host");
