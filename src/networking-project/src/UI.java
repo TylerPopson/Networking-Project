@@ -72,7 +72,7 @@ public class UI {
     // start a host connecting to a peer based on the ip typed by the user
     public void connect() throws IOException {
         h = new StringClient();
-        h.initConnection(ipInput.getText(), 6666);
+        h.init(ipInput.getText(), 6666);
         h.sendMessage("hello peer");
     }
 

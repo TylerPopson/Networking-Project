@@ -18,6 +18,8 @@ public class MultiServer {
      */
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
+    private static BufferedImage bImage = null;
+
     public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
         server.start(4000);
@@ -30,87 +32,106 @@ public class MultiServer {
             //Handle an image request.
             //new ImageClientHandler(serverSocket.accept()).start();
             //Handle an echo request.
-            new EchoClientHandler(serverSocket.accept()).start();
+            new ControlClientHandler(serverSocket.accept()).start();
+    }
+
+    /**
+     * Method implementation of the echo feature.
+     * Used by the echo client handler.
+     */
+    public static void EchoHandler(OutputStream outs, InputStream ins) throws IOException {
+        PrintWriter out = new PrintWriter(outs, true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(ins));
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            if (".".equals(inputLine)) {
+                out.println("bye");
+                break;
+            }
+            out.println(inputLine);
+        }
+        in.close();
+        out.close();
     }
 
     public void stop() throws IOException {
         serverSocket.close();
     }
 
+    public static void ImageHandler(OutputStream outs, InputStream ins) throws IOException {
+        //begin processing the stream.
+        DataInputStream dis = new DataInputStream(ins);
+        int len = dis.readInt();
+        System.out.println("Image Size: " + len / 1024 + "KB");
+
+        //deallocate resources.
+        byte[] data = new byte[len];
+        dis.readFully(data);
+        dis.close();
+
+        InputStream ian = new ByteArrayInputStream(data);
+        bImage = ImageIO.read(ian);
+
+        //displays the image.
+        JFrame f = new JFrame("Server");
+        ImageIcon icon = new ImageIcon(bImage);
+        JLabel l = new JLabel();
+
+        l.setIcon(icon);
+        f.add(l);
+        f.pack();
+        f.setVisible(true);
+
+    }
+
+    public BufferedImage getbImage() {
+        return bImage;
+    }
+
     /**
-     * Handler for an echo request
-     * Uses threads
+     * Accepts a new connection and blocks until service is specified.
+     * creates another thread based on the service needed.
+     * Services are determined based on chars.
+     * Ends after assigning thread.
      */
-    private static class EchoClientHandler extends Thread {
+    private static class ControlClientHandler extends Thread {
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
 
-        public EchoClientHandler(Socket socket) {
+        //constructor
+        public ControlClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
 
         public void run() {
             try {
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
-
-            in = new BufferedReader(
-                    new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                if (".".equals(inputLine)) {
-                    out.println("bye");
-                    break;
+                in = new BufferedReader(
+                        new InputStreamReader(clientSocket.getInputStream()));
+                String inputLine;
+                //control section, block for a character specifying service needed.
+                while ((inputLine = in.readLine()) != null) {
+                    //String service needed.
+                    if ("S".equals(inputLine)) {
+                        out.println("String Service started");
+                        EchoHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                        break;
+                    }
+                    if ("I".equals(inputLine)) {
+                        out.println("Image Service started");
+                        ImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                        break;
+                    }
                 }
-                out.println(inputLine);
-            }
-            in.close();
-            out.close();
-            clientSocket.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-    private static class ImageClientHandler extends Thread {
-        private BufferedImage bImage = null;
-        private Socket clientSocket;
 
-        public ImageClientHandler(Socket socket) {
-            this.clientSocket = socket;
-        }
-
-        public void run() {
-            try {
-                //begin processing the stream.
-                DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-                int len = dis.readInt();
-                System.out.println("Image Size: " + len / 1024 + "KB");
-
-                //deallocate resources.
-                byte[] data = new byte[len];
-                dis.readFully(data);
-                dis.close();
+                //close resources just in case.
+                in.close();
+                out.close();
                 clientSocket.close();
-
-                InputStream ian = new ByteArrayInputStream(data);
-                bImage = ImageIO.read(ian);
-
-                //displays the image.
-                JFrame f = new JFrame("Server");
-                ImageIcon icon = new ImageIcon(bImage);
-                JLabel l = new JLabel();
-
-                l.setIcon(icon);
-                f.add(l);
-                f.pack();
-                f.setVisible(true);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        public BufferedImage getbImage() {
-            return bImage;
         }
     }
 }
