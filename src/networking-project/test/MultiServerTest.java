@@ -42,11 +42,11 @@ class MultiServerTest {
     public void Client_Send_Msg_Using_Control() throws IOException {
         StringClient client1 = new StringClient();
         client1.initConnection("127.0.0.1", 4000);
-        String msg1 = client1.startString();
-        String msg2 = client1.sendMessage("hello world");
+        String msg1 = client1.sendMessage("hello");
+        String msg2 = client1.sendMessage("world");
         String terminate = client1.sendMessage(".");
 
-        assertEquals(msg1, "String Service started");
+        assertEquals(msg1, "hello");
         assertEquals(msg2, "world");
         assertEquals(terminate, "bye");
     }

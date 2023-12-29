@@ -30,9 +30,27 @@ public class MultiServer {
             //Handle an image request.
             //new ImageClientHandler(serverSocket.accept()).start();
             //Handle an echo request.
-            new ControlClientHandler(serverSocket.accept()).start();
+            new EchoClientHandler(serverSocket.accept()).start();
     }
 
+    /**
+     * Method implementation of the echo feature.
+     * Used by the echo client handler.
+     */
+    public static void EchoHandler(OutputStream outs, InputStream ins) throws IOException {
+        PrintWriter out = new PrintWriter(outs, true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(ins));
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            if (".".equals(inputLine)) {
+                out.println("bye");
+                break;
+            }
+            out.println(inputLine);
+        }
+        in.close();
+        out.close();
+}
     public void stop() throws IOException {
         serverSocket.close();
     }
@@ -93,20 +111,21 @@ public class MultiServer {
 
         public void run() {
             try {
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
-
-            in = new BufferedReader(
-                    new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                if (".".equals(inputLine)) {
-                    out.println("bye");
-                    break;
-                }
-                out.println(inputLine);
-            }
-            in.close();
-            out.close();
+                EchoHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+//                out = new PrintWriter(clientSocket.getOutputStream(), true);
+//
+//            in = new BufferedReader(
+//                    new InputStreamReader(clientSocket.getInputStream()));
+//            String inputLine;
+//            while ((inputLine = in.readLine()) != null) {
+//                if (".".equals(inputLine)) {
+//                    out.println("bye");
+//                    break;
+//                }
+//                out.println(inputLine);
+//            }
+//            in.close();
+//            out.close();
             clientSocket.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);

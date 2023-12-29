@@ -20,9 +20,9 @@ public class StringClient {
         return a;
     }
     //Specifies the String service should be used.
-    public String startString() throws IOException{
-       return sendMessage("E");
-    }
+//    public String startString() throws IOException{
+//       return sendMessage("E");
+//    }
 
     public void initConnection(String ip, int port) throws IOException {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.
@@ -38,7 +38,7 @@ public class StringClient {
         //Three-way handshake.
         stringClient.initConnection("127.0.0.1", 4000);
         //Specify strings will be sent.
-        stringClient.startString();
+//        stringClient.startString();
         String response = stringClient.sendMessage("hello host");
         System.out.println(response);
         response = stringClient.sendMessage("stop copying me");
