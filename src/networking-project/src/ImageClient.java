@@ -27,8 +27,6 @@ public class ImageClient {
         return a;
     }
     /**
-     * TODO
-     * Verify if socket type is correct.
      * @param ip
      * @param port
      * @throws Exception
