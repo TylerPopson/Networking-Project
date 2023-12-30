@@ -61,6 +61,7 @@ class MultiServerTest {
         ImageClient client3 = new ImageClient();
         //Specify starting the image service.
         client3.init("127.0.0.1", 4000);
+        client3.sendImage();
     }
 
 }
