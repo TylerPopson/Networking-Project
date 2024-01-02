@@ -12,13 +12,13 @@ public class MultiServer {
      * Handles clients reconnecting.
      * Creates a socket for every client.
      * Uses "." char to terminate connection.
-     * Currently only accepts string requests.
-     * TODO
-     * Allow multiple requests.
      */
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
     private static BufferedImage bImage = null;
+    private static String prompt;
+    private String guess;
+
 
     public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
@@ -88,13 +88,30 @@ public class MultiServer {
         return bImage;
     }
 
+    public String getGuess() {
+        return guess;
+    }
+
+    public static String getPrompt() {
+        return prompt;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
+    public void setGuess(String guess) {
+        this.guess = guess;
+    }
+
+
     /**
      * Accepts a new connection and blocks until service is specified.
      * creates another thread based on the service needed.
      * Services are determined based on chars.
      * Ends after assigning thread.
      */
-    private static class ControlClientHandler extends Thread {
+    private class ControlClientHandler extends Thread {
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
@@ -112,19 +129,29 @@ public class MultiServer {
                 String inputLine;
                 //control section, block for a character specifying service needed.
                 while ((inputLine = in.readLine()) != null) {
-                    //String service needed.
-                    if ("S".equals(inputLine)) {
-                        out.println("String Service started");
-                        EchoHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
-                        break;
+                    switch(inputLine){
+                        case "S":
+                            out.println("String service started");
+                            EchoHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            break;
+                        case "P":
+                            out.println("Prompt service started");
+                            setPrompt(in.readLine());
+                            break;
+                            //Private value is removed upon end of thread.
+                        case "I":
+                            out.println("Image service started");
+                            ImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            break;
+                        case "K":
+                            out.println(getPrompt());
+                            break;
+                        default:
+                            out.println("Session terminated");
+                            break;
                     }
-                    if ("I".equals(inputLine)) {
-                        out.println("Image Service started");
-                        ImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
-                        break;
-                    }
+                    break;
                 }
-
                 //close resources just in case.
                 in.close();
                 out.close();
