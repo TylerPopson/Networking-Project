@@ -1,5 +1,4 @@
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
@@ -19,7 +18,7 @@ public class MultiServer {
     //Buffered Image for holding image.
     private static BufferedImage bImage = null;
     private static final AtomicReference<String> prompt = new AtomicReference<String>();
-    private String guess;
+    private final AtomicReference<String> guess = new AtomicReference<String>();
     //Create a queue for sharing data between threads.
     SynchronousQueue<String> queue = new SynchronousQueue<>();
 
@@ -116,7 +115,12 @@ public void sendImageHandler(OutputStream outs, InputStream ins) throws Exceptio
     }
 
     public String getGuess() {
-        return guess;
+        try {
+            Thread.sleep(1000);
+        }catch (InterruptedException e){
+            throw new RuntimeException(e);
+        }
+        return guess.toString();
     }
 
     public static String getPrompt() {
@@ -133,7 +137,7 @@ public void sendImageHandler(OutputStream outs, InputStream ins) throws Exceptio
     }
 
     public void setGuess(String guess) {
-        this.guess = guess;
+        this.guess.set(guess);
     }
 
 
