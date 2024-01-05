@@ -3,6 +3,8 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class MultiServer {
@@ -16,9 +18,10 @@ public class MultiServer {
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
     private static BufferedImage bImage = null;
-    private static String prompt;
+    private static final AtomicReference<String> prompt = new AtomicReference<String>();
     private String guess;
-
+    //Create a queue for sharing data between threads.
+    SynchronousQueue<String> queue = new SynchronousQueue<>();
 
     public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
@@ -32,7 +35,12 @@ public class MultiServer {
             //Handle an image request.
             //new ImageClientHandler(serverSocket.accept()).start();
             //Handle an echo request.
-            new ControlClientHandler(serverSocket.accept()).start();
+            //Take any variables in the SynQueue
+        {
+                new ControlClientHandler(serverSocket.accept()).start();
+        }
+
+
     }
 
     /**
@@ -58,7 +66,7 @@ public class MultiServer {
         serverSocket.close();
     }
 
-    public static void ImageHandler(OutputStream outs, InputStream ins) throws IOException {
+    public static void ImageHandler(InputStream ins) throws IOException {
         //begin processing the stream.
         DataInputStream dis = new DataInputStream(ins);
         int len = dis.readInt();
@@ -73,17 +81,36 @@ public class MultiServer {
         bImage = ImageIO.read(ian);
 
         //displays the image.
-        JFrame f = new JFrame("Server");
-        ImageIcon icon = new ImageIcon(bImage);
-        JLabel l = new JLabel();
-
-        l.setIcon(icon);
-        f.add(l);
-        f.pack();
-        f.setVisible(true);
+//        JFrame f = new JFrame("Server");
+//        ImageIcon icon = new ImageIcon(bImage);
+//        JLabel l = new JLabel();
+//
+//        l.setIcon(icon);
+//        f.add(l);
+//        f.pack();
+//        f.setVisible(true);
 
     }
+public void sendImageHandler(OutputStream outs, InputStream ins) throws Exception{
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+    BufferedImage img = getbImage();
+    ImageIO.write(img, "jpg", baos);
+    baos.flush();
+
+    byte[] bytes = baos.toByteArray();
+    baos.close();
+    //Send image to server.
+    System.out.println("Sending image to client. ");
+
+    DataOutputStream dos = new DataOutputStream(outs);
+
+    dos.writeInt(bytes.length);
+    dos.write(bytes, 0, bytes.length);
+    System.out.println("Image sent to client. ");
+    //Close stream.
+    dos.close();
+}
     public BufferedImage getbImage() {
         return bImage;
     }
@@ -93,11 +120,16 @@ public class MultiServer {
     }
 
     public static String getPrompt() {
-        return prompt;
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return prompt.toString();
     }
 
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
+    public void setPrompt(String q) {
+        prompt.set(q);
     }
 
     public void setGuess(String guess) {
@@ -128,6 +160,7 @@ public class MultiServer {
                         new InputStreamReader(clientSocket.getInputStream()));
                 String inputLine;
                 //control section, block for a character specifying service needed.
+                //Does not accept all messages currently.
                 while ((inputLine = in.readLine()) != null) {
                     switch(inputLine){
                         case "S":
@@ -141,10 +174,13 @@ public class MultiServer {
                             //Private value is removed upon end of thread.
                         case "I":
                             out.println("Image service started");
-                            ImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            ImageHandler(clientSocket.getInputStream());
                             break;
                         case "K":
                             out.println(getPrompt());
+                            break;
+                        case "L":
+                            getbImage();
                             break;
                         default:
                             out.println("Session terminated");

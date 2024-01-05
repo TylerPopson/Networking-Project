@@ -4,11 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class ImageClient {
     private Socket hostSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private BufferedImage bImage;
 
     /**
      * This will be able to send the image and close the connection.
@@ -60,7 +62,7 @@ public class ImageClient {
         BufferedImage img;
         try {
             //Designate an image is being sent.
-            sendMessage("I");
+            String msg = sendMessage("I");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
             img = ImageIO.read(new File("C:/Users/Zach's PC/IdeaProjects/Networking-Project/src/networking-project/drawing.png"));
@@ -91,6 +93,28 @@ public class ImageClient {
         }
         //Ensure that connection is closed.
         hostSocket.close();
+    }
+    public String receiveImage() throws Exception{
+        //Designate an image is being received.
+        String msg = sendMessage("L");
+        DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
+        int len = dis.readInt();
+        byte[] data = new byte[len];
+        dis.readFully(data);
+        dis.close();
+        InputStream ian = new ByteArrayInputStream(data);
+        bImage = ImageIO.read(ian);
+        return msg;
+    }
+    public void display() throws Exception{
+        JFrame f = new JFrame("Server");
+        ImageIcon icon = new ImageIcon(bImage);
+        JLabel l = new JLabel();
+
+        l.setIcon(icon);
+        f.add(l);
+        f.pack();
+        f.setVisible(true);
     }
 
 }
