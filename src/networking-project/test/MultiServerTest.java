@@ -109,7 +109,7 @@ class MultiServerTest {
         // Retrieve image
         String msg = client4.receiveImage();
         client4.display();
-        assertEquals(msg, "Image service started");
+        assertEquals(msg, "Sending image");
 
     }
 

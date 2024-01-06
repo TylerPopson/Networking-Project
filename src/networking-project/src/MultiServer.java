@@ -92,6 +92,7 @@ public class MultiServer {
     }
 
     public void sendImageHandler(OutputStream outs, InputStream ins) throws Exception {
+        Thread.sleep(1000);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedImage img = getbImage();
         try {
