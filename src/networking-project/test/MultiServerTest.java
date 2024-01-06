@@ -81,7 +81,7 @@ class MultiServerTest {
         assertEquals(prompt, "hello world");
     }
     @Test
-    public void Client_Send_Image() throws Exception {
+    public void Server_Send_Image() throws Exception {
 
         ImageClient client4 = new ImageClient();
         //Specify starting the image service.

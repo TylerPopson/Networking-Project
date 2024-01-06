@@ -16,7 +16,7 @@ public class MultiServer {
      */
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
-    private static BufferedImage bImage = null;
+    private static final AtomicReference<BufferedImage> bImage = new AtomicReference<>();
     private static final AtomicReference<String> prompt = new AtomicReference<String>();
     private final AtomicReference<String> guess = new AtomicReference<String>();
     //Create a queue for sharing data between threads.
@@ -31,12 +31,12 @@ public class MultiServer {
         serverSocket = new ServerSocket(port);
         //Accept a connection.
         while (true)
-            //Handle an image request.
-            //new ImageClientHandler(serverSocket.accept()).start();
-            //Handle an echo request.
-            //Take any variables in the SynQueue
+        //Handle an image request.
+        //new ImageClientHandler(serverSocket.accept()).start();
+        //Handle an echo request.
+        //Take any variables in the SynQueue
         {
-                new ControlClientHandler(serverSocket.accept()).start();
+            new ControlClientHandler(serverSocket.accept()).start();
         }
 
 
@@ -69,7 +69,7 @@ public class MultiServer {
         //begin processing the stream.
         DataInputStream dis = new DataInputStream(ins);
         int len = dis.readInt();
-        System.out.println("Image Size: " + len / 1024 + "KB");
+        //System.out.println("Image Size: " + len / 1024 + "KB");
 
         //deallocate resources.
         byte[] data = new byte[len];
@@ -77,7 +77,7 @@ public class MultiServer {
         dis.close();
 
         InputStream ian = new ByteArrayInputStream(data);
-        bImage = ImageIO.read(ian);
+        bImage.set(ImageIO.read(ian));
 
         //displays the image.
 //        JFrame f = new JFrame("Server");
@@ -90,34 +90,39 @@ public class MultiServer {
 //        f.setVisible(true);
 
     }
-public void sendImageHandler(OutputStream outs, InputStream ins) throws Exception{
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    BufferedImage img = getbImage();
-    ImageIO.write(img, "jpg", baos);
-    baos.flush();
+    public void sendImageHandler(OutputStream outs, InputStream ins) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BufferedImage img = getbImage();
+        try {
+            ImageIO.write(img, "jpg", baos);
+            baos.flush();
 
-    byte[] bytes = baos.toByteArray();
-    baos.close();
-    //Send image to server.
-    System.out.println("Sending image to client. ");
+            byte[] bytes = baos.toByteArray();
+            baos.close();
+            //Send image to server.
+            System.out.println("Sending image to client. ");
 
-    DataOutputStream dos = new DataOutputStream(outs);
+            DataOutputStream dos = new DataOutputStream(outs);
 
-    dos.writeInt(bytes.length);
-    dos.write(bytes, 0, bytes.length);
-    System.out.println("Image sent to client. ");
-    //Close stream.
-    dos.close();
-}
+            dos.writeInt(bytes.length);
+            dos.write(bytes, 0, bytes.length);
+            System.out.println("Image sent to client. ");
+            //Close stream.
+            dos.close();
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+
     public BufferedImage getbImage() {
-        return bImage;
+        return bImage.get();
     }
 
     public String getGuess() {
         try {
             Thread.sleep(1000);
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         return guess.toString();
@@ -136,8 +141,9 @@ public void sendImageHandler(OutputStream outs, InputStream ins) throws Exceptio
         prompt.set(q);
     }
 
-    public void setGuess(String guess) {
-        this.guess.set(guess);
+    public void setGuess(String g) {
+
+        guess.set(g);
     }
 
 
@@ -166,7 +172,7 @@ public void sendImageHandler(OutputStream outs, InputStream ins) throws Exceptio
                 //control section, block for a character specifying service needed.
                 //Does not accept all messages currently.
                 while ((inputLine = in.readLine()) != null) {
-                    switch(inputLine){
+                    switch (inputLine) {
                         case "S":
                             out.println("String service started");
                             EchoHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
@@ -175,7 +181,7 @@ public void sendImageHandler(OutputStream outs, InputStream ins) throws Exceptio
                             out.println("Prompt service started");
                             setPrompt(in.readLine());
                             break;
-                            //Private value is removed upon end of thread.
+                        //Private value is removed upon end of thread.
                         case "I":
                             out.println("Image service started");
                             ImageHandler(clientSocket.getInputStream());
@@ -184,11 +190,19 @@ public void sendImageHandler(OutputStream outs, InputStream ins) throws Exceptio
                             out.println(getPrompt());
                             break;
                         case "L":
-                            getbImage();
+                            sendImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            break;
+                        case "M":
+                            out.println("Guess service started");
+                            setGuess(in.readLine());
+                            break;
+                        case "N":
+                            out.println(getGuess());
                             break;
                         default:
                             out.println("Session terminated");
                             break;
+
                     }
                     break;
                 }
@@ -196,7 +210,7 @@ public void sendImageHandler(OutputStream outs, InputStream ins) throws Exceptio
                 in.close();
                 out.close();
                 clientSocket.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

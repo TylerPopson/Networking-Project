@@ -58,31 +58,31 @@ public class Peer {
     }
 
 
-    public void  receivePrompt() throws Exception{}
-    public void receiveImage2() throws Exception{
-        InputStream in = hostSocket.getInputStream();
-        DataInputStream dis = new DataInputStream(in);
-
-        int len = dis.readInt();
-        System.out.println("Image Size: " + len/1024 + "KB");
-
-        byte[] data = new byte[len];
-        dis.readFully(data);
-        dis.close();
-        in.close();
-
-        InputStream ian = new ByteArrayInputStream(data);
-        BufferedImage bImage = ImageIO.read(ian);
-
-        JFrame f = new JFrame("Server");
-        ImageIcon icon = new ImageIcon(bImage);
-        JLabel l = new JLabel();
-
-        l.setIcon(icon);
-        f.add(l);
-        f.pack();
-        f.setVisible(true);
-    }
+//    public void  receivePrompt() throws Exception{}
+//    public void receiveImage2() throws Exception{
+//        InputStream in = hostSocket.getInputStream();
+//        DataInputStream dis = new DataInputStream(in);
+//
+//        int len = dis.readInt();
+//        System.out.println("Image Size: " + len/1024 + "KB");
+//
+//        byte[] data = new byte[len];
+//        dis.readFully(data);
+//        dis.close();
+//        in.close();
+//
+//        InputStream ian = new ByteArrayInputStream(data);
+//        BufferedImage bImage = ImageIO.read(ian);
+//
+//        JFrame f = new JFrame("Server");
+//        ImageIcon icon = new ImageIcon(bImage);
+//        JLabel l = new JLabel();
+//
+//        l.setIcon(icon);
+//        f.add(l);
+//        f.pack();
+//        f.setVisible(true);
+//    }
 
 
     /**
