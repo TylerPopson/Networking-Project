@@ -36,15 +36,6 @@ public class StringClient {
         StringClient stringClient = new StringClient();
         //Three-way handshake.
         stringClient.init("127.0.0.1", 4000);
-        //Specify strings will be sent.
-//        stringClient.startString();
-        String response = stringClient.sendMessage("hello host");
-        System.out.println(response);
-        response = stringClient.sendMessage("stop copying me");
-        System.out.println(response);
-        //send the terminating char.
-        response = stringClient.sendMessage(".");
-        System.out.println(response);
         //Tear down the connection.
         stringClient.cutConnection();
 
