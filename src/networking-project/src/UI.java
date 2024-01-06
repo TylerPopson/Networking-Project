@@ -23,7 +23,7 @@ public class UI {
     private Timer timer;
     private int time;
     private DrawArea canvas;
-    private Peer p;
+    private MultiServer server;
     private StringClient h;
     private String prompt;
     private String peerPrompt;
@@ -61,9 +61,9 @@ public class UI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        p = new Peer();
+        server = new MultiServer();
         try {
-            p.initConnection(6666);
+            server.start(4000);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -72,8 +72,8 @@ public class UI {
     // start a host connecting to a peer based on the ip typed by the user
     public void connect() throws IOException {
         h = new StringClient();
-        h.init(ipInput.getText(), 6666);
-        h.sendMessage("hello peer");
+        h.init(ipInput.getText(), 4000);
+//        h.sendMessage("hello peer");
     }
 
     // start the gameplay
@@ -109,7 +109,7 @@ public class UI {
                         throw new RuntimeException(ex);
                     }
 
-                    peerPrompt = p.getrPrompt();
+                    peerPrompt = server.getPrompt();
                     displayArea.removeAll();
                     displayArea.revalidate();
                     displayArea.repaint();
@@ -143,7 +143,7 @@ public class UI {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        peerGuess = p.getrGuess();
+        peerGuess = server.getGuess();
 
         PeerGuessLabel.setText(peerGuess);
         PeerGuessLabel.revalidate();
