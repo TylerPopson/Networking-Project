@@ -1,8 +1,13 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
+import javax.swing.*;
 
 
 /**
@@ -16,8 +21,13 @@ public class Peer {
     private Socket hostSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private String rPrompt;
+    private String rGuess;
+    private BufferedImage bImage = null;
+    private static DataOutputStream dos = null;
+    private static DataInputStream dis = null;
 
-    public void initConnection(int port) throws IOException {
+    public void initConnection(int port) throws Exception {
         peerSocket = new ServerSocket(port);
         hostSocket = peerSocket.accept();
         out = new PrintWriter(hostSocket.getOutputStream(), true); //Get the outputted stream from the connected host.
@@ -28,9 +38,17 @@ public class Peer {
         } else {
             out.println("Unrecognized greeting");
         }
+        dis = new DataInputStream(
+                hostSocket.getInputStream());
+        dos = new DataOutputStream(
+                hostSocket.getOutputStream());
         //Start the session.
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
+            //block until an image is received.
+            //populate the received prompt and guess in order.
+        rPrompt = inputLine;
+        rGuess = inputLine;
             if (".".equals(inputLine)) { //termination char.
                 out.println("good bye");
                 break;
@@ -40,7 +58,31 @@ public class Peer {
     }
 
 
-
+//    public void  receivePrompt() throws Exception{}
+//    public void receiveImage2() throws Exception{
+//        InputStream in = hostSocket.getInputStream();
+//        DataInputStream dis = new DataInputStream(in);
+//
+//        int len = dis.readInt();
+//        System.out.println("Image Size: " + len/1024 + "KB");
+//
+//        byte[] data = new byte[len];
+//        dis.readFully(data);
+//        dis.close();
+//        in.close();
+//
+//        InputStream ian = new ByteArrayInputStream(data);
+//        BufferedImage bImage = ImageIO.read(ian);
+//
+//        JFrame f = new JFrame("Server");
+//        ImageIcon icon = new ImageIcon(bImage);
+//        JLabel l = new JLabel();
+//
+//        l.setIcon(icon);
+//        f.add(l);
+//        f.pack();
+//        f.setVisible(true);
+//    }
 
 
     /**
@@ -51,6 +93,15 @@ public class Peer {
     return prompt;
     }
 
+    public String getrPrompt(){
+        return rPrompt;
+    }
+    public String getrGuess(){
+        return rGuess;
+    }
+    public BufferedImage getbImage() {
+        return bImage;
+    }
     /**
      * Closes the connection between the next connected host,
      * displays a message about the closed connection.
@@ -62,8 +113,9 @@ public class Peer {
         peerSocket.close();
 
     }
-    public static void main(String[] args) throws IOException {
-        Peer helloHost=new Peer();
-        helloHost.initConnection(6666);
+
+    public static void main(String[] args) throws Exception {
+        Peer peer = new Peer();
+        peer.initConnection(7777);
     }
 }
