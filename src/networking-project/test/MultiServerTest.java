@@ -9,60 +9,12 @@ class MultiServerTest {
      * @throws IOException
      */
     @Test
-    public void Client_Send_Msg_Then_Terminate() throws IOException {
-        StringClient client1 = new StringClient();
-        client1.init("127.0.0.1", 4000);
-        //Specify starting the string service.
-        String msg = client1.sendMessage("S");
-        String msg1 = client1.sendMessage("hello");
-        String msg2 = client1.sendMessage("world");
-        String terminate = client1.sendMessage(".");
-
-        assertEquals(msg1, "hello");
-        assertEquals(msg2, "world");
-        assertEquals(terminate, "bye");
+    public void Client_Send_Img() throws Exception {
+        ImageClient client3 = new ImageClient();
+        //Specify starting the image service.
+        client3.init("127.0.0.1", 4000);
+        client3.sendImage();
     }
-
-    /**
-     * Second copy of client.
-     * Verifies if server can handle multiple connections.
-     * @throws IOException
-     */
-    @Test
-    public void Client2_Send_Msg_Then_Terminate() throws IOException {
-        StringClient client2 = new StringClient();
-        //Specify starting the string service.
-        client2.init("127.0.0.1", 4000);
-        String msg = client2.sendMessage("S");
-        String msg1 = client2.sendMessage("hello");
-        String msg2 = client2.sendMessage("world");
-        String terminate = client2.sendMessage(".");
-
-        assertEquals(msg1, "hello");
-        assertEquals(msg2, "world");
-        assertEquals(terminate, "bye");
-    }
-    @Test
-    public void Client_Send_Msg_Using_Control() throws IOException {
-        StringClient client1 = new StringClient();
-        client1.init("127.0.0.1", 4000);
-        //Specify starting the string service.
-        String msg = client1.sendMessage("S");
-        String msg1 = client1.sendMessage("hello");
-        String msg2 = client1.sendMessage("world");
-        String terminate = client1.sendMessage(".");
-
-        assertEquals(msg1, "hello");
-        assertEquals(msg2, "world");
-        assertEquals(terminate, "bye");
-    }
-//    @Test
-//    public void Client_Send_Img() throws Exception {
-//        ImageClient client3 = new ImageClient();
-//        //Specify starting the image service.
-//        client3.init("127.0.0.1", 4000);
-//        client3.sendImage();
-//    }
     @Test
     public void Client_Send_Prompt() throws Exception {
 
@@ -70,13 +22,13 @@ class MultiServerTest {
         //Specify starting the image service.
         client1.init("127.0.0.1", 4000);
         //Specify a prompt will be sent.
-        String msg = client1.sendMessage("P");
+        String msg = client1.sendMessage("C");
         String msg1 = client1.sendMessage("hello world");
         //Disconnect
-        client1.sendMessage(".");
+//        client1.sendMessage(".");
         client1.init("127.0.0.1", 4000);
         //Message to retrive prompt is not being received by server.
-        String prompt = client1.sendMessage("K");
+        String prompt = client1.sendMessage("D");
         assertEquals(msg, "Prompt service started");
         assertEquals(prompt, "hello world");
     }
@@ -87,12 +39,12 @@ class MultiServerTest {
         //Specify starting the image service.
         client1.init("127.0.0.1", 4000);
         //Specify a prompt will be sent.
-        String msg = client1.sendMessage("M");
+        String msg = client1.sendMessage("E");
         String msg1 = client1.sendMessage("teapot");
         //Disconnect
         client1.sendMessage(".");
         client1.init("127.0.0.1", 4000);
-        String prompt = client1.sendMessage("N");
+        String prompt = client1.sendMessage("F");
         assertEquals(msg, "Guess service started");
         assertEquals(prompt, "teapot");
     }
@@ -102,10 +54,10 @@ class MultiServerTest {
         ImageClient client4 = new ImageClient();
         //Specify starting the image service.
         client4.init("127.0.0.1", 4000);
-        //Specify an image will be sent.
-        client4.sendImage();
-        //Disconnect
-        client4.init("127.0.0.1", 4000);
+//        //Specify an image request.
+//        client4.sendImage();
+//        //Disconnect
+//        client4.init("127.0.0.1", 4000);
         // Retrieve image
         String msg = client4.receiveImage();
         client4.display();

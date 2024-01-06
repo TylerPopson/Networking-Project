@@ -62,7 +62,7 @@ public class ImageClient {
         BufferedImage img;
         try {
             //Designate an image is being sent.
-            String msg = sendMessage("I");
+            String msg = sendMessage("A");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
             img = ImageIO.read(new File("C:/Users/Zach's PC/IdeaProjects/Networking-Project/src/networking-project/drawing.png"));
@@ -97,7 +97,7 @@ public class ImageClient {
     public String receiveImage() throws Exception{
         //Designate an image is being received.
         //send Message gets the image stream instead of the next value.
-        String msg = sendMessage("L");
+        String msg = sendMessage("B");
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
         int len = dis.readInt();
         byte[] data = new byte[len];

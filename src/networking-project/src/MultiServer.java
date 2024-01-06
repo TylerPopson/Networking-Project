@@ -31,67 +31,31 @@ public class MultiServer {
         serverSocket = new ServerSocket(port);
         //Accept a connection.
         while (true)
-        //Handle an image request.
-        //new ImageClientHandler(serverSocket.accept()).start();
-        //Handle an echo request.
-        //Take any variables in the SynQueue
+        //Handle all requests within a new thread.
         {
             new ControlClientHandler(serverSocket.accept()).start();
         }
-
-
-    }
-
-    /**
-     * Method implementation of the echo feature.
-     * Used by the echo client handler.
-     */
-    public static void EchoHandler(OutputStream outs, InputStream ins) throws IOException {
-        PrintWriter out = new PrintWriter(outs, true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            if (".".equals(inputLine)) {
-                out.println("bye");
-                break;
-            }
-            out.println(inputLine);
-        }
-        in.close();
-        out.close();
     }
 
     public void stop() throws IOException {
         serverSocket.close();
     }
+    //Handles receiving images from the client.
 
-    public static void ImageHandler(InputStream ins) throws IOException {
+    public void rImageHandler(InputStream ins) throws IOException {
         //begin processing the stream.
         DataInputStream dis = new DataInputStream(ins);
         int len = dis.readInt();
-        //System.out.println("Image Size: " + len / 1024 + "KB");
-
         //deallocate resources.
         byte[] data = new byte[len];
         dis.readFully(data);
         dis.close();
-
         InputStream ian = new ByteArrayInputStream(data);
-        bImage.set(ImageIO.read(ian));
-
-        //displays the image.
-//        JFrame f = new JFrame("Server");
-//        ImageIcon icon = new ImageIcon(bImage);
-//        JLabel l = new JLabel();
-//
-//        l.setIcon(icon);
-//        f.add(l);
-//        f.pack();
-//        f.setVisible(true);
-
+        //Set the drawn image.
+        setbImage(ImageIO.read(ian));
     }
 
-    public void sendImageHandler(OutputStream outs, InputStream ins) throws Exception {
+    public void sImageHandler(OutputStream outs, InputStream ins) throws Exception {
         Thread.sleep(1000);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedImage img = getbImage();
@@ -120,21 +84,16 @@ public class MultiServer {
         return bImage.get();
     }
 
-    public String getGuess() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return guess.toString();
+    public void setbImage(BufferedImage img) {
+        bImage.set(img);
     }
 
     public static String getPrompt() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+////            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         return prompt.toString();
     }
 
@@ -142,8 +101,16 @@ public class MultiServer {
         prompt.set(q);
     }
 
-    public void setGuess(String g) {
+    public String getGuess() {
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+        return guess.toString();
+    }
 
+    public void setGuess(String g) {
         guess.set(g);
     }
 
@@ -174,37 +141,31 @@ public class MultiServer {
                 //Does not accept all messages currently.
                 while ((inputLine = in.readLine()) != null) {
                     switch (inputLine) {
-                        case "S":
-                            out.println("String service started");
-                            EchoHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                        case "A":
+                            out.println("Image service started");
+                            rImageHandler(clientSocket.getInputStream());
                             break;
-                        case "P":
+                        case "B":
+                            out.println("Sending image");
+                            sImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            break;
+                        case "C":
                             out.println("Prompt service started");
                             setPrompt(in.readLine());
                             break;
-                        //Private value is removed upon end of thread.
-                        case "I":
-                            out.println("Image service started");
-                            ImageHandler(clientSocket.getInputStream());
-                            break;
-                        case "K":
+                        case "D":
                             out.println(getPrompt());
                             break;
-                        case "L":
-                            out.println("Sending image");
-                            sendImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
-                            break;
-                        case "M":
+                        case "E":
                             out.println("Guess service started");
                             setGuess(in.readLine());
                             break;
-                        case "N":
+                        case "F":
                             out.println(getGuess());
                             break;
                         default:
                             out.println("Session terminated");
                             break;
-
                     }
                     break;
                 }
