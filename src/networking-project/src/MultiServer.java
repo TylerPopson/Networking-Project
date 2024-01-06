@@ -190,6 +190,7 @@ public class MultiServer {
                             out.println(getPrompt());
                             break;
                         case "L":
+                            out.println("Sending image");
                             sendImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream());
                             break;
                         case "M":

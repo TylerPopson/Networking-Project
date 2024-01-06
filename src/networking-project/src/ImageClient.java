@@ -96,6 +96,7 @@ public class ImageClient {
     }
     public String receiveImage() throws Exception{
         //Designate an image is being received.
+        //send Message gets the image stream instead of the next value.
         String msg = sendMessage("L");
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
         int len = dis.readInt();
