@@ -22,6 +22,23 @@ public class StringClient {
 //    public String startString() throws IOException{
 //       return sendMessage("E");
 //    }
+public String sendPrompt(String prompt) throws IOException {
+        String response = sendMessage("C");
+        sendMessage(prompt);
+        return response;
+}
+    public String receivePrompt() throws IOException {
+        return sendMessage("D");
+    }
+    public String sendGuess(String guess) throws IOException {
+        String response = sendMessage("E");
+        sendMessage(guess);
+        return response;
+    }
+    public String receiveGuess() throws IOException {
+        return sendMessage("F");
+    }
+
 
     public void init(String ip, int port) throws IOException {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.

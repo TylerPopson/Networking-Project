@@ -24,6 +24,7 @@ public class UI {
     private int time;
     private DrawArea canvas;
     private MultiServer server;
+    private String serverip;
     private StringClient h;
     private String prompt;
     private String peerPrompt;
@@ -48,7 +49,11 @@ public class UI {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                submit();
+                try {
+                    submit();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
@@ -61,18 +66,16 @@ public class UI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        server = new MultiServer();
-        try {
-            server.start(4000);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        //Start a server.
+//        new Thread(new ServerRunnable(4000)).start();
+
     }
 
     // start a host connecting to a peer based on the ip typed by the user
     public void connect() throws IOException {
         h = new StringClient();
-        h.init(ipInput.getText(), 4000);
+        serverip = ipInput.getText();
+//        h.init(serverip, 4000);
 //        h.sendMessage("hello peer");
     }
 
@@ -98,7 +101,8 @@ public class UI {
                     peerImg = canvas.getImage();
 
                     try {
-                        h.sendMessage(prompt);
+                        h.init(serverip, 4000);
+                        h.sendPrompt(prompt);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -108,8 +112,12 @@ public class UI {
                     } catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
-
-                    peerPrompt = server.getPrompt();
+                    try {
+                        peerPrompt = h.receivePrompt();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    //peerPrompt = server.getPrompt();
                     displayArea.removeAll();
                     displayArea.revalidate();
                     displayArea.repaint();
@@ -128,12 +136,16 @@ public class UI {
         displayArea.revalidate();
         displayArea.validate();
     }
+//TODO
+// Configure to actually send the guess using proper host methods.
+    //
 
     // submit guess of image
-    public void submit() {
+    public void submit() throws IOException {
         guess = guessInput.getText();
         try {
-            h.sendMessage(guess);
+            h.init(serverip, 4000);
+            h.sendGuess(guess);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -143,12 +155,14 @@ public class UI {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        peerGuess = server.getGuess();
-
+        h.init(serverip, 4000);
+        peerGuess = h.receiveGuess();
+        //peerGuess = server.getGuess();
+        //Display the results here.
         PeerGuessLabel.setText(peerGuess);
         PeerGuessLabel.revalidate();
         PeerGuessLabel.repaint();
-
+        //Make sure this reads the prompt.
         PeerPromptLabel.setText(peerPrompt);
         PeerPromptLabel.repaint();
 
@@ -179,6 +193,25 @@ public class UI {
         return everything;
     }
 
+    /**
+     * Start the server on a separate thread to ensure no deadlock occurs.
+     * Requests to server should go through calling host methods.
+     * At the end of program, ensure that the server shuts down.
+     */
+    public class ServerRunnable implements Runnable{
+        int port;
+        public ServerRunnable(int port){
+            this.port = port;
+        }
+        public void run(){
+            server = new MultiServer();
+            try {
+                server.start(port);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+}
     public static void main(String[] args) {
         JFrame frame = new JFrame("UI");
         frame.setContentPane(new UI().UI);
@@ -186,4 +219,5 @@ public class UI {
         frame.pack();
         frame.setVisible(true);
     }
+
 }
