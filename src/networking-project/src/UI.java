@@ -25,7 +25,7 @@ public class UI {
     private DrawArea canvas;
     private MultiServer server;
     private String serverip;
-    private StringClient h;
+    private Client h;
     private String prompt;
     private String peerPrompt;
     private String guess;
@@ -73,7 +73,7 @@ public class UI {
 
     // start a host connecting to a peer based on the ip typed by the user
     public void connect() throws IOException {
-        h = new StringClient();
+        h = new Client();
         serverip = ipInput.getText();
 //        h.init(serverip, 4000);
 //        h.sendMessage("hello peer");
@@ -136,11 +136,12 @@ public class UI {
         displayArea.revalidate();
         displayArea.validate();
     }
-//TODO
-// Configure to actually send the guess using proper host methods.
-    //
 
-    // submit guess of image
+    /**
+     * Send guess.
+     * Display results.
+     * @throws IOException
+     */
     public void submit() throws IOException {
         guess = guessInput.getText();
         try {
