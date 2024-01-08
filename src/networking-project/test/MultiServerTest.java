@@ -18,7 +18,7 @@ class MultiServerTest {
     @Test
     public void Client_Send_Prompt() throws Exception {
 
-        StringClient client1 = new StringClient();
+        Client client1 = new Client();
         //Specify starting the image service.
         client1.init("127.0.0.1", 4000);
         //Specify a prompt will be sent.
@@ -35,7 +35,7 @@ class MultiServerTest {
     @Test
     public void Client_Send_Guess() throws Exception {
 
-        StringClient client1 = new StringClient();
+        Client client1 = new Client();
         //Specify starting the image service.
         client1.init("127.0.0.1", 4000);
         //Specify a prompt will be sent.
@@ -51,7 +51,7 @@ class MultiServerTest {
     @Test
     public void Server_Send_Image() throws Exception {
 
-        ImageClient client4 = new ImageClient();
+        Client client4 = new Client();
         //Specify starting the image service.
         client4.init("127.0.0.1", 4000);
 //        //Specify an image request.
