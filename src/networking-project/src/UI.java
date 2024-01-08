@@ -164,6 +164,7 @@ public class UI {
         PeerGuessLabel.revalidate();
         PeerGuessLabel.repaint();
         //Make sure this reads the prompt.
+        //The peer's prompt is never set.
         PeerPromptLabel.setText(peerPrompt);
         PeerPromptLabel.repaint();
 

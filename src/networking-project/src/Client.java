@@ -16,6 +16,44 @@ public class Client {
     private BufferedReader in;
     private BufferedImage bImage;
 
+    private class Player{
+        private String prompt;
+        private String guess;
+        private BufferedImage pImage;
+        private String code;
+
+        public String getPrompt() {
+            return prompt;
+        }
+
+        public void setPrompt(String prompt) {
+            this.prompt = prompt;
+        }
+
+        public String getGuess() {
+            return guess;
+        }
+
+        public void setGuess(String guess) {
+            this.guess = guess;
+        }
+
+        public BufferedImage getpImage() {
+            return pImage;
+        }
+
+        public void setpImage(BufferedImage pImage) {
+            this.pImage = pImage;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
     public String sendMessage(String msg) throws IOException {
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         out.println(msg);
