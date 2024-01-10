@@ -69,11 +69,13 @@ public class Client {
      * Designates an image will be sent.
      * Closes all resources at the end.
      *
+     * @return
      * @throws Exception
      */
-    public void sendCode() throws Exception{
+    public String sendCode() throws Exception{
         String response = sendMessage("G");
         sendMessage(player.getCode());
+        return response;
     }
     public void sendImage() throws Exception {
         BufferedImage img;

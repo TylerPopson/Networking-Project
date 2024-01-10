@@ -21,7 +21,7 @@ public class MultiServer {
     private static final AtomicReference<BufferedImage> bImage = new AtomicReference<>();
     private static final AtomicReference<String> prompt = new AtomicReference<String>();
     private final AtomicReference<String> guess = new AtomicReference<String>();
-    private final AtomicReference<Integer>playercount = new AtomicReference<Integer>();
+    private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
     //Create a queue for sharing data between threads.
     //Array representation of connected players.
     private final AtomicReference<String>code = new AtomicReference<>();
