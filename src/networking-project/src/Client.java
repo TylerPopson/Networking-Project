@@ -15,8 +15,12 @@ public class Client {
     private PrintWriter out;
     private BufferedReader in;
     private BufferedImage bImage;
+    Player player = new Player("ABC");
 
     private class Player{
+        private Player(String code){
+            this.code = code;
+        }
         private String prompt;
         private String guess;
         private BufferedImage pImage;
@@ -65,8 +69,14 @@ public class Client {
      * Designates an image will be sent.
      * Closes all resources at the end.
      *
+     * @return
      * @throws Exception
      */
+    public String sendCode() throws Exception{
+        String response = sendMessage("G");
+        sendMessage(player.getCode());
+        return response;
+    }
     public void sendImage() throws Exception {
         BufferedImage img;
         try {

@@ -18,22 +18,21 @@ public class MultiServer {
      */
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
-    //Atomic variabls accessible from threads, may replace with Syn queue.
     private static final AtomicReference<BufferedImage> bImage = new AtomicReference<>();
     private static final AtomicReference<String> prompt = new AtomicReference<String>();
     private final AtomicReference<String> guess = new AtomicReference<String>();
-    private final AtomicReference<Integer>playercount = new AtomicReference<Integer>();
-    private final AtomicReference<String>code = new AtomicReference<>();
-    //Make sure to specify code unless using no-arg constructor.
-    private final AtomicReference<Player> player1 = new AtomicReference<>();
-
+    private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
+    //Create a queue for sharing data between threads.
     //Array representation of connected players.
-    //Linear hashed map
-    //private Player[]source = new Player[2];
-    //Atomic data structure is created from source array.
-    //private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
-
+    private final AtomicReference<String>code = new AtomicReference<>();
+    //Make sure to specify code
+    private final AtomicReference<Player> player1 = new AtomicReference<>(new Player());
+//    private Player[]source = new Player[2];
+//    //Atomic data structure is created from source array.
+//    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
+    SynchronousQueue<String> queue = new SynchronousQueue<>();
     private class Player {
+        private Player(){}
         private Player(String code){
             this.code = code;
         }
@@ -175,6 +174,7 @@ public class MultiServer {
     public void CreatePlayer(String code){
 
 //            cPlayers.set(playercount.get(), new Player(code));
+       player1.set(new Player("code"));
             player1.get().setCode(code);
     playercount.set(playercount.get()+1);
     }
@@ -193,9 +193,6 @@ public class MultiServer {
      * Ends after assigning thread.
      */
     private class ControlClientHandler extends Thread {
-        //Threadlocal code - may be included with constructor
-
-
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
