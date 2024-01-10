@@ -10,7 +10,7 @@ class MultiServerTest {
      */
     @Test
     public void Client_Send_Img() throws Exception {
-        ImageClient client3 = new ImageClient();
+        Client client3 = new Client();
         //Specify starting the image service.
         client3.init("127.0.0.1", 4000);
         client3.sendImage();
