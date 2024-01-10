@@ -15,8 +15,12 @@ public class Client {
     private PrintWriter out;
     private BufferedReader in;
     private BufferedImage bImage;
+    Player player = new Player("ABC");
 
     private class Player{
+        private Player(String code){
+            this.code = code;
+        }
         private String prompt;
         private String guess;
         private BufferedImage pImage;
@@ -67,6 +71,10 @@ public class Client {
      *
      * @throws Exception
      */
+    public void sendCode() throws Exception{
+        String response = sendMessage("G");
+        sendMessage(player.getCode());
+    }
     public void sendImage() throws Exception {
         BufferedImage img;
         try {

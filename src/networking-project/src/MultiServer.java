@@ -26,12 +26,13 @@ public class MultiServer {
     //Array representation of connected players.
     private final AtomicReference<String>code = new AtomicReference<>();
     //Make sure to specify code
-    private final AtomicReference<Player> player1 = new AtomicReference<>();
+    private final AtomicReference<Player> player1 = new AtomicReference<>(new Player());
 //    private Player[]source = new Player[2];
 //    //Atomic data structure is created from source array.
 //    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
     SynchronousQueue<String> queue = new SynchronousQueue<>();
     private class Player {
+        private Player(){}
         private Player(String code){
             this.code = code;
         }
@@ -173,6 +174,7 @@ public class MultiServer {
     public void CreatePlayer(String code){
 
 //            cPlayers.set(playercount.get(), new Player(code));
+       player1.set(new Player("code"));
             player1.get().setCode(code);
     playercount.set(playercount.get()+1);
     }
