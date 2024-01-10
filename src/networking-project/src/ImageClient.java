@@ -12,6 +12,8 @@ public class ImageClient {
     private BufferedReader in;
     private BufferedImage bImage;
 
+
+
     /**
      * This will be able to send the image and close the connection.
      * Client-Side representation able to send multiple requests to the server.
@@ -94,7 +96,8 @@ public class ImageClient {
         //Ensure that connection is closed.
         hostSocket.close();
     }
-    public String receiveImage() throws Exception{
+
+    public String receiveImage() throws Exception {
         //Designate an image is being received.
         //send Message gets the image stream instead of the next value.
         String msg = sendMessage("B");
@@ -107,7 +110,8 @@ public class ImageClient {
         bImage = ImageIO.read(ian);
         return msg;
     }
-    public void display() throws Exception{
+
+    public void display() throws Exception {
         JFrame f = new JFrame("Server");
         ImageIcon icon = new ImageIcon(bImage);
         JLabel l = new JLabel();

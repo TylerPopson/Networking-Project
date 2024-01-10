@@ -2,8 +2,10 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
+import java.util.Objects;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 
 public class MultiServer {
@@ -19,10 +21,58 @@ public class MultiServer {
     private static final AtomicReference<BufferedImage> bImage = new AtomicReference<>();
     private static final AtomicReference<String> prompt = new AtomicReference<String>();
     private final AtomicReference<String> guess = new AtomicReference<String>();
-    private final AtomicReference<Integer>playercount = new AtomicReference<Integer>();
+    private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
     //Create a queue for sharing data between threads.
+    //Array representation of connected players.
+    private final AtomicReference<String>code = new AtomicReference<>();
+    //Make sure to specify code
+    private final AtomicReference<Player> player1 = new AtomicReference<>(new Player());
+//    private Player[]source = new Player[2];
+//    //Atomic data structure is created from source array.
+//    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
     SynchronousQueue<String> queue = new SynchronousQueue<>();
+    private class Player {
+        private Player(){}
+        private Player(String code){
+            this.code = code;
+        }
+        private String prompt;
+        private String guess;
+        private BufferedImage pImage;
+        private String code;
 
+        public String getPrompt() {
+            return prompt;
+        }
+
+        public void setPrompt(String prompt) {
+            this.prompt = prompt;
+        }
+
+        public String getGuess() {
+            return guess;
+        }
+
+        public void setGuess(String guess) {
+            this.guess = guess;
+        }
+
+        public BufferedImage getpImage() {
+            return pImage;
+        }
+
+        public void setpImage(BufferedImage pImage) {
+            this.pImage = pImage;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
     public static void main(String[] args) throws Exception {
         MultiServer server = new MultiServer();
         server.start(4000);
@@ -59,7 +109,7 @@ public class MultiServer {
     public void sImageHandler(OutputStream outs, InputStream ins) throws Exception {
         Thread.sleep(1000);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedImage img = getbImage();
+        BufferedImage img = player1.get().getpImage();
         try {
             ImageIO.write(img, "jpg", baos);
             baos.flush();
@@ -82,24 +132,30 @@ public class MultiServer {
     }
 
     public BufferedImage getbImage() {
-        return bImage.get();
+        return  player1.get().getpImage();
+//                bImage.get();
     }
 
     public void setbImage(BufferedImage img) {
-        bImage.set(img);
+        player1.get().setpImage(img);
+//        bImage.set(img);
     }
 
-    public static String getPrompt() {
+    public String getPrompt() {
 //        try {
 ////            Thread.sleep(1000);
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-        return prompt.toString();
+        return  player1.get().getPrompt();
+
+//                prompt.toString();
     }
 
     public void setPrompt(String q) {
-        prompt.set(q);
+        player1.get().setPrompt(q);
+//        prompt.set(q);
+
     }
 
     public String getGuess() {
@@ -108,14 +164,28 @@ public class MultiServer {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-        return guess.toString();
+        return player1.get().getGuess();
+//        guess.toString();
     }
 
     public void setGuess(String g) {
-        guess.set(g);
+        player1.get().setGuess(g);
     }
+    public void CreatePlayer(String code){
 
-
+//            cPlayers.set(playercount.get(), new Player(code));
+       player1.set(new Player("code"));
+            player1.get().setCode(code);
+    playercount.set(playercount.get()+1);
+    }
+//    public Player getCurrentPlayer(String code){
+//        if (Objects.equals(cPlayers.get(0).getCode(), code)){
+//            return cPlayers.get(0);
+//        }
+//        else if (Objects.equals(cPlayers.get(1).getCode(), code))
+//            return cPlayers.get(1);
+//        return null;
+//    }
     /**
      * Accepts a new connection and blocks until service is specified.
      * creates another thread based on the service needed.
@@ -163,6 +233,10 @@ public class MultiServer {
                             break;
                         case "F":
                             out.println(getGuess());
+                            break;
+                        case "G":
+                            out.println("Create player service started");
+                            CreatePlayer(in.readLine());
                             break;
                         default:
                             out.println("Session terminated");

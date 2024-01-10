@@ -64,5 +64,15 @@ class MultiServerTest {
         assertEquals(msg, "Sending image");
 
     }
+    @Test
+    public void Client_Send_Code() throws Exception {
+
+        Client client5 = new Client();
+        client5.init("127.0.0.1", 4000);
+        //Specify starting the code service.
+        // Retrieve image
+        String msg = client5.sendCode();
+        assertEquals(msg, "Create player service started");
+    }
 
 }
