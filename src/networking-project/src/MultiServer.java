@@ -1,7 +1,8 @@
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.net.*;
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Objects;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,10 +27,10 @@ public class MultiServer {
     //Array representation of connected players.
     private final AtomicReference<String>code = new AtomicReference<>();
     //Make sure to specify code
-    private final AtomicReference<Player> player1 = new AtomicReference<>(new Player());
+//    private final AtomicReference<Player> player1 = new AtomicReference<>(new Player());
 //    private Player[]source = new Player[2];
 //    //Atomic data structure is created from source array.
-//    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
+    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(2);
     SynchronousQueue<String> queue = new SynchronousQueue<>();
     private class Player {
         private Player(){}
@@ -109,7 +110,7 @@ public class MultiServer {
     public void sImageHandler(OutputStream outs, InputStream ins) throws Exception {
         Thread.sleep(1000);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedImage img = player1.get().getpImage();
+        BufferedImage img = cPlayers.get(0).getpImage();
         try {
             ImageIO.write(img, "jpg", baos);
             baos.flush();
@@ -132,12 +133,12 @@ public class MultiServer {
     }
 
     public BufferedImage getbImage() {
-        return  player1.get().getpImage();
+        return  cPlayers.get(0).getpImage();
 //                bImage.get();
     }
 
     public void setbImage(BufferedImage img) {
-        player1.get().setpImage(img);
+        cPlayers.get(0).setpImage(img);
 //        bImage.set(img);
     }
 
@@ -147,13 +148,13 @@ public class MultiServer {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-        return  player1.get().getPrompt();
+        return  cPlayers.get(0).getPrompt();
 
 //                prompt.toString();
     }
 
     public void setPrompt(String q) {
-        player1.get().setPrompt(q);
+        cPlayers.get(0).setPrompt(q);
 //        prompt.set(q);
 
     }
@@ -164,28 +165,30 @@ public class MultiServer {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-        return player1.get().getGuess();
+        return getCurrentPlayer(code.get()).getGuess();
 //        guess.toString();
     }
 
     public void setGuess(String g) {
-        player1.get().setGuess(g);
+        cPlayers.get(0).setGuess(g);
     }
     public void CreatePlayer(String code){
-
-//            cPlayers.set(playercount.get(), new Player(code));
-       player1.set(new Player("code"));
-            player1.get().setCode(code);
-    playercount.set(playercount.get()+1);
+        Player player1 = new Player(code);
+        cPlayers.set(playercount.get(), player1);
+        playercount.set(playercount.get()+1);
     }
-//    public Player getCurrentPlayer(String code){
-//        if (Objects.equals(cPlayers.get(0).getCode(), code)){
-//            return cPlayers.get(0);
-//        }
-//        else if (Objects.equals(cPlayers.get(1).getCode(), code))
-//            return cPlayers.get(1);
-//        return null;
-//    }
+    public Player getCurrentPlayer(String code){
+        Player currentPlayer;
+        currentPlayer = cPlayers.get(0);
+        if (Objects.equals(currentPlayer.code, code)){
+            return currentPlayer;
+        }
+        currentPlayer = cPlayers.get(1);
+        if (Objects.equals(currentPlayer.code, code)){
+            return currentPlayer;
+        }
+        return null;
+    }
     /**
      * Accepts a new connection and blocks until service is specified.
      * creates another thread based on the service needed.
@@ -196,11 +199,17 @@ public class MultiServer {
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
+        ThreadLocal<String> code;
 
         //constructor
         public ControlClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
+        public ControlClientHandler(Socket socket, String c) {
+            this.clientSocket = socket;
+            this.code = c;
+        }
+        //May assign code and publish player with code later.
 
         public void run() {
             try {
@@ -209,7 +218,7 @@ public class MultiServer {
                         new InputStreamReader(clientSocket.getInputStream()));
                 String inputLine;
                 //control section, block for a character specifying service needed.
-                //Does not accept all messages currently.
+
                 while ((inputLine = in.readLine()) != null) {
                     switch (inputLine) {
                         case "A":

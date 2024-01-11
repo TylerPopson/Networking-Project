@@ -72,7 +72,7 @@ public class Client {
      * @return
      * @throws Exception
      */
-    public String sendCode() throws Exception{
+    public String createPlayer() throws Exception{
         String response = sendMessage("G");
         sendMessage(player.getCode());
         return response;
