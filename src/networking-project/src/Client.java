@@ -73,14 +73,14 @@ public class Client {
      * @throws Exception
      */
     public String createPlayer() throws Exception{
-        String response = sendMessage("G");
         sendMessage(player.getCode());
-        return response;
+        return sendMessage("G");
     }
     public void sendImage() throws Exception {
         BufferedImage img;
         try {
             //Designate an image is being sent.
+            sendMessage(player.getCode());
             String msg = sendMessage("A");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
@@ -117,6 +117,7 @@ public class Client {
     public String receiveImage() throws Exception {
         //Designate an image is being received.
         //send Message gets the image stream instead of the next value.
+        sendMessage(player.getCode());
         String msg = sendMessage("B");
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
         int len = dis.readInt();
@@ -144,6 +145,7 @@ public class Client {
 //       return sendMessage("E");
 //    }
     public String sendPrompt(String prompt) throws IOException {
+        sendMessage(player.getCode());
         String response = sendMessage("C");
         sendMessage(prompt);
         return response;
