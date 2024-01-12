@@ -63,7 +63,6 @@ public class Client {
         out.println(msg);
         return in.readLine();
     }
-
     /**
      * Method used for actually sending the image.
      * Designates an image will be sent.
@@ -152,16 +151,19 @@ public class Client {
     }
 
     public String receivePrompt() throws IOException {
+        sendMessage(player.getCode());
         return sendMessage("D");
     }
 
     public String sendGuess(String guess) throws IOException {
+        sendMessage(player.getCode());
         String response = sendMessage("E");
         sendMessage(guess);
         return response;
     }
 
     public String receiveGuess() throws IOException {
+        sendMessage(player.getCode());
         return sendMessage("F");
     }
 
@@ -170,6 +172,7 @@ public class Client {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
+        //May want to send code here.
     }
 
     public void cutConnection() throws IOException {
