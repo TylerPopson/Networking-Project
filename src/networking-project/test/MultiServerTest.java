@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
@@ -6,9 +7,20 @@ class MultiServerTest {
     /**
      * Test to verify if server can receive strings.
      * Sends a terminating char "." to end the connection.
-     * @throws IOException
+     * @throws Exception
      */
     @Test
+    @Order(1)
+    public void Client_Create_Player() throws Exception {
+        Client client5 = new Client();
+        client5.init("127.0.0.1", 4000);
+        //Specify starting the code service.
+        // Retrieve image
+        String msg = client5.createPlayer();
+        assertEquals(msg, "Create player service started");
+    }
+    @Test
+    @Order(2)
     public void Client_Send_Img() throws Exception {
         Client client3 = new Client();
         //Specify starting the image service.
@@ -16,14 +28,16 @@ class MultiServerTest {
         client3.sendImage();
     }
     @Test
+    @Order(3)
     public void Client_Send_Prompt() throws Exception {
 
         Client client1 = new Client();
         //Specify starting the image service.
         client1.init("127.0.0.1", 4000);
+        client1.createPlayer();
         //Specify a prompt will be sent.
         String msg = client1.sendMessage("C");
-        String msg1 = client1.sendMessage("hello world");
+        client1.sendMessage("hello world");
         //Disconnect
 //        client1.sendMessage(".");
         client1.init("127.0.0.1", 4000);
@@ -33,22 +47,24 @@ class MultiServerTest {
         assertEquals(prompt, "hello world");
     }
     @Test
+    @Order(4)
     public void Client_Send_Guess() throws Exception {
 
         Client client1 = new Client();
-        //Specify starting the image service.
+
         client1.init("127.0.0.1", 4000);
         //Specify a prompt will be sent.
-        String msg = client1.sendMessage("E");
-        String msg1 = client1.sendMessage("teapot");
+        String msg2 = client1.sendMessage("E");
+        String msg3 = client1.sendMessage("teapot");
         //Disconnect
         client1.sendMessage(".");
         client1.init("127.0.0.1", 4000);
         String prompt = client1.sendMessage("F");
-        assertEquals(msg, "Guess service started");
+        assertEquals(msg2, "Guess service started");
         assertEquals(prompt, "teapot");
     }
     @Test
+    @Order(5)
     public void Server_Send_Image() throws Exception {
 
         Client client4 = new Client();
@@ -59,20 +75,13 @@ class MultiServerTest {
 //        //Disconnect
 //        client4.init("127.0.0.1", 4000);
         // Retrieve image
-        String msg = client4.receiveImage();
+        String msg2 = client4.receiveImage();
         client4.display();
-        assertEquals(msg, "Sending image");
+        assertEquals(msg2, "Sending image");
 
     }
     @Test
+    @Order(6)
     public void Client_Send_Code() throws Exception {
-
-        Client client5 = new Client();
-        client5.init("127.0.0.1", 4000);
-        //Specify starting the code service.
-        // Retrieve image
-        String msg = client5.sendCode();
-        assertEquals(msg, "Create player service started");
     }
-
 }

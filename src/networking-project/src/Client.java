@@ -63,7 +63,6 @@ public class Client {
         out.println(msg);
         return in.readLine();
     }
-
     /**
      * Method used for actually sending the image.
      * Designates an image will be sent.
@@ -72,15 +71,15 @@ public class Client {
      * @return
      * @throws Exception
      */
-    public String sendCode() throws Exception{
-        String response = sendMessage("G");
+    public String createPlayer() throws Exception{
         sendMessage(player.getCode());
-        return response;
+        return sendMessage("G");
     }
     public void sendImage() throws Exception {
         BufferedImage img;
         try {
             //Designate an image is being sent.
+            sendMessage(player.getCode());
             String msg = sendMessage("A");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
@@ -117,6 +116,7 @@ public class Client {
     public String receiveImage() throws Exception {
         //Designate an image is being received.
         //send Message gets the image stream instead of the next value.
+        sendMessage(player.getCode());
         String msg = sendMessage("B");
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
         int len = dis.readInt();
@@ -144,22 +144,26 @@ public class Client {
 //       return sendMessage("E");
 //    }
     public String sendPrompt(String prompt) throws IOException {
+        sendMessage(player.getCode());
         String response = sendMessage("C");
         sendMessage(prompt);
         return response;
     }
 
     public String receivePrompt() throws IOException {
+        sendMessage(player.getCode());
         return sendMessage("D");
     }
 
     public String sendGuess(String guess) throws IOException {
+        sendMessage(player.getCode());
         String response = sendMessage("E");
         sendMessage(guess);
         return response;
     }
 
     public String receiveGuess() throws IOException {
+        sendMessage(player.getCode());
         return sendMessage("F");
     }
 
@@ -168,6 +172,7 @@ public class Client {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
+        //May want to send code here.
     }
 
     public void cutConnection() throws IOException {
