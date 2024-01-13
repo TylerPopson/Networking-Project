@@ -15,7 +15,6 @@ public class MultiServer {
      * Handles multiple clients.
      * Handles clients reconnecting.
      * Creates a socket for every client.
-     * Uses "." char to terminate connection.
      */
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
@@ -23,16 +22,9 @@ public class MultiServer {
     private static final AtomicReference<String> prompt = new AtomicReference<String>();
     private final AtomicReference<String> guess = new AtomicReference<String>();
     private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
-    //Create a queue for sharing data between threads.
     //Array representation of connected players.
-    private final AtomicReference<String>code = new AtomicReference<>();
-    //Make sure to specify code
-//    private final AtomicReference<Player> player1 = new AtomicReference<>(new Player());
-//    private Player[]source = new Player[2];
-//    //Atomic data structure is created from source array.
     private final Player[] source = new Player[]{new Player(), new Player()};
     private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
-    SynchronousQueue<String> queue = new SynchronousQueue<>();
     private class Player {
         private Player(){}
         private Player(String code){
@@ -95,7 +87,7 @@ public class MultiServer {
     }
     //Handles receiving images from the client.
 
-    public void rImageHandler(InputStream ins, String c) throws IOException {
+    public void rImageHandler(InputStream ins, String code) throws IOException {
         //begin processing the stream.
         DataInputStream dis = new DataInputStream(ins);
         int len = dis.readInt();
@@ -105,13 +97,13 @@ public class MultiServer {
         dis.close();
         InputStream ian = new ByteArrayInputStream(data);
         //Set the drawn image.
-        setbImage(ImageIO.read(ian), c);
+        setbImage(ImageIO.read(ian), code);
     }
 
-    public void sImageHandler(OutputStream outs, InputStream ins, String c) throws Exception {
+    public void sImageHandler(OutputStream outs, InputStream ins, String code) throws Exception {
         Thread.sleep(1000);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedImage img = cPlayers.get(0).getpImage();
+        BufferedImage img = getbImage(code);
         try {
             ImageIO.write(img, "jpg", baos);
             baos.flush();
@@ -133,44 +125,28 @@ public class MultiServer {
         }
     }
 
-    public BufferedImage getbImage(String c) {
-        return  cPlayers.get(0).getpImage();
-//                bImage.get();
+    public BufferedImage getbImage(String code) {
+        return  getCurrentPlayer(code).getpImage();
     }
 
-    public void setbImage(BufferedImage img, String c) {
-        cPlayers.get(0).setpImage(img);
-//        bImage.set(img);
-    }
-
-    public String getPrompt(String c) {
-//        try {
-////            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-        return  cPlayers.get(0).getPrompt();
-
-//                prompt.toString();
-    }
-
-    public void setPrompt(String q, String c) {
-        cPlayers.get(0).setPrompt(q);
-//        prompt.set(q);
+    public void setbImage(BufferedImage img, String code) {
+        getCurrentPlayer(code).setpImage(img);
 
     }
 
-    public String getGuess(String c) {
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-        return cPlayers.get(0).getGuess();
-//        guess.toString();
+    public String getPrompt(String code) {
+        return  getCurrentPlayer(code).getPrompt();
     }
 
-    public void setGuess(String g, String c) {
+    public void setPrompt(String q, String code) {
+        getCurrentPlayer(code).setPrompt(q);
+    }
+
+    public String getGuess(String code) {
+        return getCurrentPlayer(code).getGuess();
+    }
+
+    public void setGuess(String g, String code) {
         cPlayers.get(0).setGuess(g);
     }
     public void CreatePlayer(String code){
@@ -200,26 +176,21 @@ public class MultiServer {
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
-        ThreadLocal<String> code;
+        ThreadLocal<String> code = new ThreadLocal<>();
 
         //constructor
         public ControlClientHandler(Socket socket) {
             this.clientSocket = socket;
-        }
-        public ControlClientHandler(Socket socket, String c) {
-            this.clientSocket = socket;
-            this.code = c;
         }
         //May assign code and publish player with code later.
 
         public void run() {
             try {
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
-                in = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream()));
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String inputLine;
                 //Specify the player being modified by their code.
-                code.set(in.readLine());
+                code.set("ABC");
                 //control section, block for a character specifying service needed.
 
                 while ((inputLine = in.readLine()) != null) {
@@ -229,7 +200,7 @@ public class MultiServer {
                             rImageHandler(clientSocket.getInputStream(), code.get());
                             break;
                         case "B":
-                            out.println("Sending image");
+                            out.println("Sending image service started");
                             sImageHandler(clientSocket.getOutputStream(), clientSocket.getInputStream(), code.get());
                             break;
                         case "C":
@@ -248,7 +219,7 @@ public class MultiServer {
                             break;
                         case "G":
                             out.println("Create player service started");
-                            CreatePlayer(in.readLine());
+                            CreatePlayer(code.get());
                             break;
                         default:
                             out.println("Session terminated");

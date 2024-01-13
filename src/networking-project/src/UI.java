@@ -113,7 +113,7 @@ public class UI {
                         throw new RuntimeException(ex);
                     }
                     try {
-                        peerPrompt = h.receivePrompt();
+                        peerPrompt = h.requestPrompt();
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -157,7 +157,7 @@ public class UI {
             throw new RuntimeException(e);
         }
         h.init(serverip, 4000);
-        peerGuess = h.receiveGuess();
+        peerGuess = h.requestGuess();
         //peerGuess = server.getGuess();
         //Display the results here.
         PeerGuessLabel.setText(peerGuess);

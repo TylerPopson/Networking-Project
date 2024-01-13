@@ -72,15 +72,16 @@ public class Client {
      * @throws Exception
      */
     public String createPlayer() throws Exception{
-        sendMessage(player.getCode());
         return sendMessage("G");
     }
-    public void sendImage() throws Exception {
+    //is not able to send the image.
+    public String sendImage() throws Exception {
         BufferedImage img;
+        String msg = "";
         try {
             //Designate an image is being sent.
             sendMessage(player.getCode());
-            String msg = sendMessage("A");
+            msg = sendMessage("A");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
             img = ImageIO.read(new File("C:/Users/Zach's PC/IdeaProjects/Networking-Project/src/networking-project/drawing.png"));
@@ -111,9 +112,10 @@ public class Client {
         }
         //Ensure that connection is closed.
         hostSocket.close();
+        return msg;
     }
-
-    public String receiveImage() throws Exception {
+//Is not able to request the image.
+    public String requestImage() throws Exception {
         //Designate an image is being received.
         //send Message gets the image stream instead of the next value.
         sendMessage(player.getCode());
@@ -144,25 +146,22 @@ public class Client {
 //       return sendMessage("E");
 //    }
     public String sendPrompt(String prompt) throws IOException {
-        sendMessage(player.getCode());
         String response = sendMessage("C");
         sendMessage(prompt);
         return response;
     }
 
-    public String receivePrompt() throws IOException {
-        sendMessage(player.getCode());
+    public String requestPrompt() throws IOException {
         return sendMessage("D");
     }
 
     public String sendGuess(String guess) throws IOException {
-        sendMessage(player.getCode());
         String response = sendMessage("E");
         sendMessage(guess);
         return response;
     }
 
-    public String receiveGuess() throws IOException {
+    public String requestGuess() throws IOException {
         sendMessage(player.getCode());
         return sendMessage("F");
     }
@@ -172,7 +171,8 @@ public class Client {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
-        //May want to send code here.
+//        //May want to send code here.
+//        sendMessage(player.getCode());
     }
 
     public void cutConnection() throws IOException {
