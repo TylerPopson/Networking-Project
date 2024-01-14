@@ -86,7 +86,7 @@ public class Client {
             msg = sendMessage("A");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
-            img = ImageIO.read(new File("C:/Users/Zach's PC/IdeaProjects/Networking-Project/src/networking-project/drawing.png"));
+            img = ImageIO.read(new File("drawing.png"));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             ImageIO.write(img, "jpg", baos);
@@ -171,6 +171,7 @@ public class Client {
         client.init("127.0.0.1", 4000);
         //Tear down the connection.
         client.cutConnection();
+        client.requestImage();
 
     }
 }
