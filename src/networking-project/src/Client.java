@@ -17,10 +17,11 @@ public class Client {
     private BufferedImage bImage;
     Player player = new Player("ABC");
 
-    private class Player{
-        private Player(String code){
+    private class Player {
+        private Player(String code) {
             this.code = code;
         }
+
         private String prompt;
         private String guess;
         private BufferedImage pImage;
@@ -58,32 +59,35 @@ public class Client {
             this.code = code;
         }
     }
+
     public String sendMessage(String msg) throws IOException {
-        out = new PrintWriter(hostSocket.getOutputStream(), true);
         out.println(msg);
         return in.readLine();
     }
-    /**
-     * Method used for actually sending the image.
-     * Designates an image will be sent.
-     * Closes all resources at the end.
-     *
-     * @return
-     * @throws Exception
-     */
-    public String createPlayer() throws Exception{
+
+    public void init(String ip, int port) throws IOException {
+        hostSocket = new Socket(ip, port); //treat this host as a client for now.
+        out = new PrintWriter(hostSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
         sendMessage(player.getCode());
+
+//        //May want to send code here.
+    }
+
+    public String createPlayer() throws Exception {
         return sendMessage("G");
     }
-    public void sendImage() throws Exception {
+
+    //is not able to send the image.
+    public String sendImage() throws Exception {
         BufferedImage img;
+        String msg = "";
         try {
             //Designate an image is being sent.
-            sendMessage(player.getCode());
-            String msg = sendMessage("A");
+            msg = sendMessage("A");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
-            img = ImageIO.read(new File("C:/Users/Zach's PC/IdeaProjects/Networking-Project/src/networking-project/drawing.png"));
+            img = ImageIO.read(new File("drawing.png"));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             ImageIO.write(img, "jpg", baos);
@@ -111,12 +115,13 @@ public class Client {
         }
         //Ensure that connection is closed.
         hostSocket.close();
+        return msg;
     }
 
-    public String receiveImage() throws Exception {
+    //Is not able to request the image.
+    public String requestImage() throws Exception {
         //Designate an image is being received.
         //send Message gets the image stream instead of the next value.
-        sendMessage(player.getCode());
         String msg = sendMessage("B");
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
         int len = dis.readInt();
@@ -128,7 +133,30 @@ public class Client {
         return msg;
     }
 
-    public void display(){
+    public String sendPrompt(String prompt) throws IOException {
+        String response = sendMessage("C");
+        sendMessage(prompt);
+        return response;
+    }
+
+    public String requestPrompt() throws IOException {
+        return sendMessage("D");
+    }
+
+    public String sendGuess(String guess) throws IOException {
+        String response = sendMessage("E");
+        sendMessage(guess);
+        return response;
+    }
+
+    public String requestGuess() throws IOException {
+        return sendMessage("F");
+    }
+
+    public void cutConnection() throws IOException {
+        hostSocket.close();
+    }
+    public void display() {
         JFrame f = new JFrame("Server");
         ImageIcon icon = new ImageIcon(bImage);
         JLabel l = new JLabel();
@@ -138,53 +166,13 @@ public class Client {
         f.pack();
         f.setVisible(true);
     }
-
-    //Specifies the String service should be used.
-//    public String startString() throws IOException{
-//       return sendMessage("E");
-//    }
-    public String sendPrompt(String prompt) throws IOException {
-        sendMessage(player.getCode());
-        String response = sendMessage("C");
-        sendMessage(prompt);
-        return response;
-    }
-
-    public String receivePrompt() throws IOException {
-        sendMessage(player.getCode());
-        return sendMessage("D");
-    }
-
-    public String sendGuess(String guess) throws IOException {
-        sendMessage(player.getCode());
-        String response = sendMessage("E");
-        sendMessage(guess);
-        return response;
-    }
-
-    public String receiveGuess() throws IOException {
-        sendMessage(player.getCode());
-        return sendMessage("F");
-    }
-
-
-    public void init(String ip, int port) throws IOException {
-        hostSocket = new Socket(ip, port); //treat this host as a client for now.
-        out = new PrintWriter(hostSocket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
-        //May want to send code here.
-    }
-
-    public void cutConnection() throws IOException {
-        hostSocket.close();
-    }
-
     public static void main(String[] args) throws Exception {
         Client client = new Client();
         //Three-way handshake.
         client.init("127.0.0.1", 4000);
         //Tear down the connection.
         client.cutConnection();
+        client.requestImage();
 
     }
 }
