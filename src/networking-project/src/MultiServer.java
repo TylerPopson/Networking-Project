@@ -85,8 +85,8 @@ public class MultiServer {
     public void stop() throws IOException {
         serverSocket.close();
     }
-    //Handles receiving images from the client.
 
+    //Handles receiving images from the client.
     public void rImageHandler(InputStream ins, String code) throws IOException {
         //begin processing the stream.
         DataInputStream dis = new DataInputStream(ins);
@@ -100,6 +100,7 @@ public class MultiServer {
         setbImage(ImageIO.read(ian), code);
     }
 
+    //Handles requests for images from client.
     public void sImageHandler(OutputStream outs, InputStream ins, String code) throws Exception {
         Thread.sleep(1000);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -124,7 +125,7 @@ public class MultiServer {
             System.out.println("Exception: " + e.getMessage());
         }
     }
-
+    //Handles setting and getting images.
     public BufferedImage getbImage(String code) {
         return  getCurrentPlayer(code).getpImage();
     }
@@ -133,7 +134,7 @@ public class MultiServer {
         getCurrentPlayer(code).setpImage(img);
 
     }
-
+    //Handles setting and getting a clients prompt
     public String getPrompt(String code) {
         return  getCurrentPlayer(code).getPrompt();
     }
@@ -141,7 +142,7 @@ public class MultiServer {
     public void setPrompt(String q, String code) {
         getCurrentPlayer(code).setPrompt(q);
     }
-
+    //Handles setting and getting a clients guess
     public String getGuess(String code) {
         return getCurrentPlayer(code).getGuess();
     }
@@ -149,11 +150,24 @@ public class MultiServer {
     public void setGuess(String g, String code) {
         getCurrentPlayer(code).setGuess(g);
     }
+
+    /**
+     * Creates and initializes a player object with a specified code.
+     * Adds the player to the data structure holding player information.
+     * Increments the player count.
+     * @param code
+     */
     public void CreatePlayer(String code){
         Player player1 = new Player(code);
         cPlayers.set(playercount.get(), player1);
         playercount.set(playercount.get()+1);
     }
+
+    /**
+     * Compares the specified code with each player in the data structure holding player information.
+     * @param code
+     * @return the current player. Returns null if no player with the specified code is found.
+     */
     public Player getCurrentPlayer(String code){
         Player currentPlayer;
         currentPlayer = cPlayers.get(0);
