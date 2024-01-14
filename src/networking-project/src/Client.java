@@ -61,7 +61,6 @@ public class Client {
     }
 
     public String sendMessage(String msg) throws IOException {
-        out = new PrintWriter(hostSocket.getOutputStream(), true);
         out.println(msg);
         return in.readLine();
     }
@@ -70,6 +69,8 @@ public class Client {
         hostSocket = new Socket(ip, port); //treat this host as a client for now.
         out = new PrintWriter(hostSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(hostSocket.getInputStream()));
+        sendMessage(player.getCode());
+
 //        //May want to send code here.
     }
 

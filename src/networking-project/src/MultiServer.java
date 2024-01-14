@@ -188,11 +188,11 @@ public class MultiServer {
             try {
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String inputLine;
+                String inputLine = in.readLine();
                 //Specify the player being modified by their code.
-                code.set("ABC");
+                code.set(inputLine);
+                out.println("player" + code.get());
                 //control section, block for a character specifying service needed.
-
                 while ((inputLine = in.readLine()) != null) {
                     switch (inputLine) {
                         case "A":
