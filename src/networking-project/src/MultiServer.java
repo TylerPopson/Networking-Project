@@ -147,7 +147,7 @@ public class MultiServer {
     }
 
     public void setGuess(String g, String code) {
-        cPlayers.get(0).setGuess(g);
+        getCurrentPlayer(code).setGuess(g);
     }
     public void CreatePlayer(String code){
         Player player1 = new Player(code);

@@ -29,9 +29,6 @@ class MultiServerTest {
     public void Client_Send_Prompt() throws Exception {
 
         Client client1 = new Client();
-        //Specify starting the image service.
-        client1.init("127.0.0.1", 4000);
-        client1.createPlayer();
         //Specify a prompt will be sent.
         client1.init("127.0.0.1", 4000);
         String msg = client1.sendPrompt("hello world");
