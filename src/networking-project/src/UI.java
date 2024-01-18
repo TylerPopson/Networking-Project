@@ -75,8 +75,6 @@ public class UI {
     public void connect() throws IOException {
         h = new Client();
         serverip = ipInput.getText();
-//        h.init(serverip, 4000);
-//        h.sendMessage("hello peer");
     }
 
     // start the gameplay
@@ -89,7 +87,10 @@ public class UI {
         time = 20;
         promptLabel.setText(prompt);
         connectButton.setEnabled(false);
-
+        /**
+         * Action listener to capture drawing.
+         * Also sends prompt
+         */
         ActionListener timeAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,8 +103,13 @@ public class UI {
 
                     try {
                         h.init(serverip, 4000);
+                        h.createPlayer();
+                        //May send prompt service to a different section behind sending an image.
+                        h.init(serverip, 4000);
                         h.sendPrompt(prompt);
-                    } catch (IOException ex) {
+                        h.init(serverip, 4000);
+                        h.sendImage();
+                    } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
 
@@ -113,11 +119,11 @@ public class UI {
                         throw new RuntimeException(ex);
                     }
                     try {
+                        h.init(serverip, 4000);
                         peerPrompt = h.requestPrompt();
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
-                    //peerPrompt = server.getPrompt();
                     displayArea.removeAll();
                     displayArea.revalidate();
                     displayArea.repaint();
@@ -157,8 +163,8 @@ public class UI {
             throw new RuntimeException(e);
         }
         h.init(serverip, 4000);
+
         peerGuess = h.requestGuess();
-        //peerGuess = server.getGuess();
         //Display the results here.
         PeerGuessLabel.setText(peerGuess);
         PeerGuessLabel.revalidate();
