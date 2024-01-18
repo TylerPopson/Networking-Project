@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Objects;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -180,12 +179,23 @@ public class MultiServer {
         }
         return null;
     }
+    public void sendResults(OutputStream outs, InputStream ins) throws Exception{
+    Player currentPlayer;
+    PrintWriter out = new PrintWriter(outs);
+    for (int i = 0; i < playercount.get(); i++){
+        currentPlayer = cPlayers.get(i);
+        sImageHandler(outs, ins, currentPlayer.code);
+        out.println();
+        out.println();
+    }
+    }
     /**
      * Accepts a new connection and blocks until service is specified.
      * creates another thread based on the service needed.
      * Services are determined based on chars.
      * Ends after assigning thread.
      */
+
     private class ControlClientHandler extends Thread {
         private Socket clientSocket;
         private PrintWriter out;
