@@ -15,6 +15,7 @@ public class Client {
     private PrintWriter out;
     private BufferedReader in;
     private BufferedImage bImage;
+    private int playercount;
     Player player = new Player("ABC");
 
     private class Player {
@@ -160,11 +161,20 @@ public class Client {
         JFrame f = new JFrame("Server");
         ImageIcon icon = new ImageIcon(bImage);
         JLabel l = new JLabel();
-
         l.setIcon(icon);
         f.add(l);
         f.pack();
         f.setVisible(true);
+    }
+    public void requestResults() throws Exception {
+        sendMessage("H");
+    int remaining = Integer.parseInt(in.readLine());
+    while (remaining != 0){
+        //Receive image.
+        String prompt = in.readLine();
+        String guess = in.readLine();
+        remaining--;
+    }
     }
     public static void main(String[] args) throws Exception {
         Client client = new Client();

@@ -182,11 +182,12 @@ public class MultiServer {
     public void sendResults(OutputStream outs, InputStream ins) throws Exception{
     Player currentPlayer;
     PrintWriter out = new PrintWriter(outs);
+    out.println(playercount.get().toString());
     for (int i = 0; i < playercount.get(); i++){
         currentPlayer = cPlayers.get(i);
         sImageHandler(outs, ins, currentPlayer.code);
-        out.println();
-        out.println();
+        out.println(currentPlayer.getPrompt());
+        out.println(currentPlayer.getGuess());
     }
     }
     /**
@@ -233,6 +234,7 @@ public class MultiServer {
                             break;
                         case "D":
                             out.println(getPrompt(code.get()));
+
                             break;
                         case "E":
                             out.println("Guess service started");
@@ -244,6 +246,10 @@ public class MultiServer {
                         case "G":
                             out.println("Create player service started");
                             CreatePlayer(code.get());
+                            break;
+                        case "H":
+                            out.println("Player results service started");
+                            sendResults(clientSocket.getOutputStream(), clientSocket.getInputStream());
                             break;
                         default:
                             out.println("Session terminated");
