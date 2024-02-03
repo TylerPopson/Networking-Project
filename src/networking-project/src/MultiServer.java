@@ -183,12 +183,13 @@ public class MultiServer {
     Player currentPlayer;
     PrintWriter out = new PrintWriter(outs);
     out.println(playercount.get().toString());
-    for (int i = 0; i < playercount.get(); i++){
-        currentPlayer = cPlayers.get(i);
-        sImageHandler(outs, ins, currentPlayer.code);
+//    for (int i = 0; i < playercount.get(); i++){
+        currentPlayer = cPlayers.get(0);
+//        sImageHandler(outs, ins, currentPlayer.code);
+        out.println(currentPlayer.getCode());
         out.println(currentPlayer.getPrompt());
         out.println(currentPlayer.getGuess());
-    }
+//    }
     }
     /**
      * Accepts a new connection and blocks until service is specified.

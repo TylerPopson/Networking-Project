@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MultiServerTest {
@@ -66,5 +68,17 @@ class MultiServerTest {
         client4.display();
         assertEquals(msg2, "Sending image service started");
 
+    }
+    @Test
+    @Order(6)
+    public void Client_Request_Results() throws Exception {
+        Client client5 = new Client();
+        //Specify requesting results.
+        client5.init("127.0.0.1", 4000);
+        String[]results = new String[3];
+        results = Arrays.copyOf(client5.requestResults(), 3);
+        assertEquals(results[0], "ABC");
+        assertEquals(results[1], "hello world");
+        assertEquals(results[2], "teapot");
     }
 }

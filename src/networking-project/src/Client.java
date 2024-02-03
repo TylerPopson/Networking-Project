@@ -165,16 +165,41 @@ public class Client {
         f.add(l);
         f.pack();
         f.setVisible(true);
+
     }
-    public void requestResults() throws Exception {
+
+    /**
+     *
+     * @return A players drawn image.
+     * @throws Exception
+     */
+
+    public BufferedImage requestResultsImg() throws Exception {
+        String msg = sendMessage("I");
+        DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
+        int len = dis.readInt();
+        byte[] data = new byte[len];
+        dis.readFully(data);
+        dis.close();
+        InputStream ian = new ByteArrayInputStream(data);
+        return ImageIO.read(ian);
+    }
+    public String[] requestResults() throws Exception {
+        String[]results;
         sendMessage("H");
-    int remaining = Integer.parseInt(in.readLine());
-    while (remaining != 0){
-        //Receive image.
+        //currently returns a null array.
+        String code = in.readLine();
         String prompt = in.readLine();
         String guess = in.readLine();
-        remaining--;
-    }
+
+//    int remaining = Integer.parseInt(in.readLine());
+//    while (remaining != 0){
+        //Prompt
+
+//        remaining--;
+//    }
+
+    return results = new String[]{code, prompt, guess};
     }
     public static void main(String[] args) throws Exception {
         Client client = new Client();
