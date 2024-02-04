@@ -146,6 +146,7 @@ public class UI {
     /**
      * Send guess.
      * Display results.
+     *
      * @throws IOException
      */
     public void submit() throws IOException {
@@ -162,15 +163,22 @@ public class UI {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        h.init(serverip, 4000);
+        try {
+            display();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
 
-        peerGuess = h.requestGuess();
-        //Display the results here.
+    public void display() throws IOException {
+        h.init(serverip,4000);
+    peerGuess =h.requestGuess();
+    //Display the results here.
         PeerGuessLabel.setText(peerGuess);
         PeerGuessLabel.revalidate();
         PeerGuessLabel.repaint();
-        //Make sure this reads the prompt.
-        //The peer's prompt is never set.
+    //Make sure this reads the prompt.
+    //The peer's prompt is never set.
         PeerPromptLabel.setText(peerPrompt);
         PeerPromptLabel.repaint();
 
@@ -178,7 +186,7 @@ public class UI {
         timerLabel.repaint();
 
         promptLabel.setText(guess);
-    }
+}
 
     // set the form up for guessing what the drawing is
     // loads other users drawing

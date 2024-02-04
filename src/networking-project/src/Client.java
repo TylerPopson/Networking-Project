@@ -153,7 +153,9 @@ public class Client {
     public String requestGuess() throws IOException {
         return sendMessage("F");
     }
-
+    public int requestPlayerCount() throws IOException{
+        return Integer.parseInt(sendMessage("J"));
+    }
     public void cutConnection() throws IOException {
         hostSocket.close();
     }
@@ -188,16 +190,10 @@ public class Client {
         String[]results;
         sendMessage("H");
         //currently returns a null array.
+
         String code = in.readLine();
         String prompt = in.readLine();
         String guess = in.readLine();
-
-//    int remaining = Integer.parseInt(in.readLine());
-//    while (remaining != 0){
-        //Prompt
-
-//        remaining--;
-//    }
 
     return results = new String[]{code, prompt, guess};
     }

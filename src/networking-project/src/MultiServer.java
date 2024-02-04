@@ -180,12 +180,8 @@ public class MultiServer {
         return null;
     }
     public void sendResults(OutputStream outs, InputStream ins) throws Exception{
-    Player currentPlayer;
-    PrintWriter out = new PrintWriter(outs);
-    out.println(playercount.get().toString());
-//    for (int i = 0; i < playercount.get(); i++){
-        currentPlayer = cPlayers.get(0);
-//        sImageHandler(outs, ins, currentPlayer.code);
+    Player currentPlayer = cPlayers.get(0);
+    PrintWriter out = new PrintWriter(outs, true);
         out.println(currentPlayer.getCode());
         out.println(currentPlayer.getPrompt());
         out.println(currentPlayer.getGuess());
