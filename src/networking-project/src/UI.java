@@ -176,7 +176,7 @@ public class UI {
 //    peerGuess =h.requestGuess();
     //Display the results here.
         String[]results;
-        results = Arrays.copyOf(h.requestResults(), 3);
+        results = Arrays.copyOf(h.requestResults(false), 4);
         while (!results[0].equals("0")) {
             peerGuess = results[2];
             PeerGuessLabel.setText(peerGuess);

@@ -18,12 +18,12 @@ public class MultiServer {
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
     private static final AtomicReference<BufferedImage> bImage = new AtomicReference<>();
-    private static final AtomicReference<String> prompt = new AtomicReference<String>();
-    private final AtomicReference<String> guess = new AtomicReference<String>();
+    private static final AtomicReference<String> prompt = new AtomicReference<>();
+    private final AtomicReference<String> guess = new AtomicReference<>();
     private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
     //Array representation of connected players.
     private final Player[] source = new Player[]{new Player(), new Player()};
-    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
+    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<>(source);
     private class Player {
         private Player(){}
         private Player(String code){
@@ -154,7 +154,7 @@ public class MultiServer {
      * Creates and initializes a player object with a specified code.
      * Adds the player to the data structure holding player information.
      * Increments the player count.
-     * @param code
+     * @param code player code
      */
     public void CreatePlayer(String code){
         Player player1 = new Player(code);
@@ -164,7 +164,7 @@ public class MultiServer {
 
     /**
      * Compares the specified code with each player in the data structure holding player information.
-     * @param code
+     * @param code player code
      * @return the current player. Returns null if no player with the specified code is found.
      */
     public Player getCurrentPlayer(String code){
@@ -179,18 +179,16 @@ public class MultiServer {
         }
         return null;
     }
-    public void sendResults(OutputStream outs, InputStream ins) throws Exception{
+    public void sendResults(OutputStream outs, InputStream ins) {
         PrintWriter out = new PrintWriter(outs, true);
         //may want to decrement.
-        for (int i = playercount.get(); i > 0; i++){
+        for (int i = playercount.get(); i >= 0; i--){
         Player currentPlayer = cPlayers.get(i);
-        out.println((i));
+        out.println(String.valueOf(i));
         out.println(currentPlayer.getCode());
         out.println(currentPlayer.getPrompt());
         out.println(currentPlayer.getGuess());
     }
-        out.println("0");
-
     }
     /**
      * Accepts a new connection and blocks until service is specified.

@@ -1,10 +1,8 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.net.*;
 import java.io.*;
-import java.io.IOException;
-import java.util.Objects;
+import java.net.Socket;
 
 /**
  * Representation of a Host.
@@ -187,17 +185,20 @@ public class Client {
         InputStream ian = new ByteArrayInputStream(data);
         return ImageIO.read(ian);
     }
-    public String[] requestResults() throws Exception {
-        String[]results;
-        sendMessage("H");
+    public String[] requestResults(Boolean repeatCall) throws Exception {
+        String[] results;
+        if (!repeatCall) {
+            String response = sendMessage("H");
+        }
+
         //currently returns a null array.
         //may have to be divided into loop
+        //left gets the code.
         String left = in.readLine();
         String code = in.readLine();
         String prompt = in.readLine();
         String guess = in.readLine();
-    if (left.equals("0")) return results = new  String[]{left};
-    return results = new String[]{code, prompt, guess};
+    return results = new String[]{left, code, prompt, guess};
     }
     public static void main(String[] args) throws Exception {
         Client client = new Client();

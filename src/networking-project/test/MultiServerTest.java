@@ -76,17 +76,22 @@ class MultiServerTest {
         //Specify requesting results.
         client5.init("127.0.0.1", 4000);
         String[]results;
-        String[]fResults = new String[3];
+        String[]fResults = new String[4];
         //structured like a do-while loop, is that desirable?
-        results = Arrays.copyOf(client5.requestResults(), 3);
-        while (!results[0].equals( "0")) {
-        fResults[0] = results[0];
-        fResults[1] = results[1];
-        fResults[2] = results[2];
-        results = Arrays.copyOf(client5.requestResults(), 3);
+        boolean repeat = false;
+        do {
+            results = Arrays.copyOf(client5.requestResults(repeat), 4);
+            fResults[0] = results[0];
+            fResults[1] = results[1];
+            fResults[2] = results[2];
+            fResults[3] = results[3];
+            repeat = true;
         }
-        assertEquals(fResults[0], "ABC");
-        assertEquals(fResults[1], "hello world");
-        assertEquals(fResults[2], "teapot");
+        while (!results[0].equals("0"));
+
+        assertEquals(fResults[0], "0");
+        assertEquals(fResults[1], "ABC");
+        assertEquals(fResults[2], "hello world");
+        assertEquals(fResults[3], "teapot");
     }
 }
