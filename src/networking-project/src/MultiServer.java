@@ -180,12 +180,17 @@ public class MultiServer {
         return null;
     }
     public void sendResults(OutputStream outs, InputStream ins) throws Exception{
-    Player currentPlayer = cPlayers.get(0);
-    PrintWriter out = new PrintWriter(outs, true);
+        PrintWriter out = new PrintWriter(outs, true);
+        //may want to decrement.
+        for (int i = playercount.get(); i > 0; i++){
+        Player currentPlayer = cPlayers.get(i);
+        out.println((i));
         out.println(currentPlayer.getCode());
         out.println(currentPlayer.getPrompt());
         out.println(currentPlayer.getGuess());
-//    }
+    }
+        out.println("0");
+
     }
     /**
      * Accepts a new connection and blocks until service is specified.
