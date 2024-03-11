@@ -24,9 +24,9 @@ public class MultiServer {
     //Array representation of connected players.
     private final Player[] source = new Player[]{new Player(), new Player()};
     private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<>(source);
-    private class Player {
-        private Player(){}
-        private Player(String code){
+    public class Player {
+        public Player(){}
+        public Player(String code){
             this.code = code;
         }
         private String prompt;
@@ -182,7 +182,7 @@ public class MultiServer {
     public void sendResults(OutputStream outs, InputStream ins) {
         PrintWriter out = new PrintWriter(outs, true);
         //may want to decrement.
-        for (int i = playercount.get(); i >= 0; i--){
+        for (int i = playercount.get()-1; i >= 0; i--){
         Player currentPlayer = cPlayers.get(i);
         out.println(String.valueOf(i));
         out.println(currentPlayer.getCode());

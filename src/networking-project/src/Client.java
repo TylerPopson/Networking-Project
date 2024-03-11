@@ -17,8 +17,9 @@ public class Client {
     private int playercount;
     Player player = new Player("ABC");
 
-    private class Player {
-        private Player(String code) {
+    public class Player {
+        public Player(){}
+        public Player(String code) {
             this.code = code;
         }
 
