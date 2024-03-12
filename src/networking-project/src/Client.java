@@ -88,7 +88,7 @@ public class Client {
             msg = sendMessage("A");
             System.out.println("Reading image from drive.");
             //Read an image from the drive.
-            img = ImageIO.read(new File("drawing.png"));
+            img = ImageIO.read(new File("lines.png"));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             ImageIO.write(img, "jpg", baos);
