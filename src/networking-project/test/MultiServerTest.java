@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -96,8 +98,15 @@ class MultiServerTest {
         assertEquals(fResults[2], "hello world");
         assertEquals(fResults[3], "teapot");
     }
+    public void Client_Request_Img_Results() throws Exception {
+        Client client5 = new Client();
+        //Specify requesting results.
+        client5.init("127.0.0.1", 4000);
+        BufferedImage img = client5.requestResultsImg();
+
+    }
     @Test
-    @Order(7)
+    @Order(8)
     public void Client_Request_Multiple_Results() throws Exception {
         Client client5 = new Client();
         //Specify requesting results.
