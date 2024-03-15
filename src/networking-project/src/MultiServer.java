@@ -182,16 +182,16 @@ public class MultiServer {
         return null;
     }
     public void sendImgResults(OutputStream outs, InputStream ins) throws Exception {
-        Thread.sleep(1000);
+
         PrintWriter out = new PrintWriter(outs, true);
         DataOutputStream dos = new DataOutputStream(outs);
-        for (int i = playercount.get()-1; i >= 0; i--) {
-            Player currentPlayer = cPlayers.get(i);
+        for (int i = playercount.get()-1; i >= -1; i--) {
             out.println(i);
+            if(i == -1)
+                break;
+            Player currentPlayer = cPlayers.get(i);
             sImage(dos, currentPlayer.getpImage());
-
         }
-        out.println("-1");
         dos.close();
     }
     public void sendResults(OutputStream outs, InputStream ins) {
