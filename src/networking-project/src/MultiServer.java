@@ -102,24 +102,26 @@ public class MultiServer {
     //Handles requests for images from client.
     public void sImageHandler(OutputStream outs, InputStream ins, String code) throws Exception {
         Thread.sleep(1000);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedImage img = getbImage(code);
+        DataOutputStream dos = new DataOutputStream(outs);
+        try {
+            sImage(dos, img);
+            //Close stream.
+            dos.close();
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+    //Helper method for sImageHandler, contains most of the functionality for sending images.
+    public void sImage(DataOutputStream dos, BufferedImage img) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(img, "jpg", baos);
             baos.flush();
-
             byte[] bytes = baos.toByteArray();
             baos.close();
-            //Send image to server.
-            System.out.println("Sending image to client. ");
-
-            DataOutputStream dos = new DataOutputStream(outs);
-
             dos.writeInt(bytes.length);
             dos.write(bytes, 0, bytes.length);
-            System.out.println("Image sent to client. ");
-            //Close stream.
-            dos.close();
         } catch (Exception e) {
             System.out.println("Exception: " + e.getMessage());
         }
@@ -179,15 +181,28 @@ public class MultiServer {
         }
         return null;
     }
+    public void sendImgResults(OutputStream outs, InputStream ins) throws Exception {
+        Thread.sleep(1000);
+        PrintWriter out = new PrintWriter(outs, true);
+        DataOutputStream dos = new DataOutputStream(outs);
+        for (int i = playercount.get()-1; i >= 0; i--) {
+            Player currentPlayer = cPlayers.get(i);
+            out.println(i);
+            sImage(dos, currentPlayer.getpImage());
+
+        }
+        out.println("-1");
+        dos.close();
+    }
     public void sendResults(OutputStream outs, InputStream ins) {
         PrintWriter out = new PrintWriter(outs, true);
         //may want to decrement.
         for (int i = playercount.get()-1; i >= 0; i--){
-        Player currentPlayer = cPlayers.get(i);
-        out.println(String.valueOf(i));
-        out.println(currentPlayer.getCode());
-        out.println(currentPlayer.getPrompt());
-        out.println(currentPlayer.getGuess());
+            Player currentPlayer = cPlayers.get(i);
+            out.println(i);
+            out.println(currentPlayer.getCode());
+            out.println(currentPlayer.getPrompt());
+            out.println(currentPlayer.getGuess());
     }
     }
     /**
@@ -234,7 +249,6 @@ public class MultiServer {
                             break;
                         case "D":
                             out.println(getPrompt(code.get()));
-
                             break;
                         case "E":
                             out.println("Guess service started");
@@ -250,6 +264,10 @@ public class MultiServer {
                         case "H":
                             out.println("Player results service started");
                             sendResults(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            break;
+                        case "I":
+                            out.println("Player image results service started");
+                            sendImgResults(clientSocket.getOutputStream(), clientSocket.getInputStream());
                             break;
                         default:
                             out.println("Session terminated");

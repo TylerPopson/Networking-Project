@@ -69,7 +69,6 @@ class MultiServerTest {
         client4.init("127.0.0.1", 4000);
         //causes socket reset.
         String msg2 = client4.requestImage();
-        client4.display();
         assertEquals(msg2, "Sending image service started");
 
     }
@@ -98,15 +97,8 @@ class MultiServerTest {
         assertEquals(fResults[2], "hello world");
         assertEquals(fResults[3], "teapot");
     }
-    public void Client_Request_Img_Results() throws Exception {
-        Client client5 = new Client();
-        //Specify requesting results.
-        client5.init("127.0.0.1", 4000);
-        BufferedImage img = client5.requestResultsImg();
-
-    }
     @Test
-    @Order(8)
+    @Order(7)
     public void Client_Request_Multiple_Results() throws Exception {
         Client client5 = new Client();
         //Specify requesting results.
@@ -138,5 +130,22 @@ class MultiServerTest {
             assertEquals(fResults[2], "blue sky");
             assertEquals(fResults[3], "kettle");
         }
+    }
+    @Test
+    @Order(8)
+    public void Client_Request_Img_Multiple_Results() throws Exception {
+        Client client5 = new Client();
+        //Specify requesting results.
+        client5.init("127.0.0.1", 4000);
+        ArrayList<BufferedImage> results = new ArrayList<>();
+        BufferedImage result;
+        boolean repeat = false;
+        do{
+            result = client5.requestResultsImg(repeat);
+            results.add(result);
+            client5.display(result);
+            repeat = true;
+        }
+        while(result.getHeight() !=1 && result.getWidth() != 1);
     }
 }
