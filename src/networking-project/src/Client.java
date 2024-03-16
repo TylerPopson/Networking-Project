@@ -180,13 +180,6 @@ public class Client {
             String response = sendMessage("I");
         }
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
-        String left = in.readLine();
-
-        if (left.equals("-1")){
-            dis.close();
-            return new BufferedImage(1, 1, 1);
-        }
-        Thread.sleep(1000);
         int len = dis.readInt();
         System.out.println("len is " + len);
         byte[] data = new byte[len];

@@ -185,12 +185,11 @@ public class MultiServer {
 
         PrintWriter out = new PrintWriter(outs, true);
         DataOutputStream dos = new DataOutputStream(outs);
-        for (int i = playercount.get()-1; i >= -1; i--) {
-            out.println(i);
-            if(i == -1)
-                break;
+        for (int i = playercount.get()-1; i >= 0; i--) {
+            Thread.sleep(1000);
             Player currentPlayer = cPlayers.get(i);
             sImage(dos, currentPlayer.getpImage());
+
         }
         dos.close();
     }
