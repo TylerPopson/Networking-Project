@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Objects;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -19,15 +18,15 @@ public class MultiServer {
     private ServerSocket serverSocket;
     //Buffered Image for holding image.
     private static final AtomicReference<BufferedImage> bImage = new AtomicReference<>();
-    private static final AtomicReference<String> prompt = new AtomicReference<String>();
-    private final AtomicReference<String> guess = new AtomicReference<String>();
+    private static final AtomicReference<String> prompt = new AtomicReference<>();
+    private final AtomicReference<String> guess = new AtomicReference<>();
     private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
     //Array representation of connected players.
     private final Player[] source = new Player[]{new Player(), new Player()};
-    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<Player>(source);
-    private class Player {
-        private Player(){}
-        private Player(String code){
+    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<>(source);
+    public class Player {
+        public Player(){}
+        public Player(String code){
             this.code = code;
         }
         private String prompt;
@@ -103,24 +102,26 @@ public class MultiServer {
     //Handles requests for images from client.
     public void sImageHandler(OutputStream outs, InputStream ins, String code) throws Exception {
         Thread.sleep(1000);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedImage img = getbImage(code);
+        DataOutputStream dos = new DataOutputStream(outs);
+        try {
+            sImage(dos, img);
+            //Close stream.
+            dos.close();
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+    //Helper method for sImageHandler, contains most of the functionality for sending images.
+    public void sImage(DataOutputStream dos, BufferedImage img) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(img, "jpg", baos);
             baos.flush();
-
             byte[] bytes = baos.toByteArray();
             baos.close();
-            //Send image to server.
-            System.out.println("Sending image to client. ");
-
-            DataOutputStream dos = new DataOutputStream(outs);
-
             dos.writeInt(bytes.length);
             dos.write(bytes, 0, bytes.length);
-            System.out.println("Image sent to client. ");
-            //Close stream.
-            dos.close();
         } catch (Exception e) {
             System.out.println("Exception: " + e.getMessage());
         }
@@ -155,7 +156,7 @@ public class MultiServer {
      * Creates and initializes a player object with a specified code.
      * Adds the player to the data structure holding player information.
      * Increments the player count.
-     * @param code
+     * @param code player code
      */
     public void CreatePlayer(String code){
         Player player1 = new Player(code);
@@ -165,7 +166,7 @@ public class MultiServer {
 
     /**
      * Compares the specified code with each player in the data structure holding player information.
-     * @param code
+     * @param code player code
      * @return the current player. Returns null if no player with the specified code is found.
      */
     public Player getCurrentPlayer(String code){
@@ -180,12 +181,37 @@ public class MultiServer {
         }
         return null;
     }
+    public void sendImgResults(OutputStream outs, InputStream ins) throws Exception {
+
+        PrintWriter out = new PrintWriter(outs, true);
+        DataOutputStream dos = new DataOutputStream(outs);
+        for (int i = playercount.get()-1; i >= 0; i--) {
+            Thread.sleep(1000);
+            Player currentPlayer = cPlayers.get(i);
+            sImage(dos, currentPlayer.getpImage());
+        }
+        Thread.sleep(1000);
+        sImage(dos, new BufferedImage(1, 1, 1));
+        dos.close();
+    }
+    public void sendResults(OutputStream outs, InputStream ins) {
+        PrintWriter out = new PrintWriter(outs, true);
+        //may want to decrement.
+        for (int i = playercount.get()-1; i >= 0; i--){
+            Player currentPlayer = cPlayers.get(i);
+            out.println(i);
+            out.println(currentPlayer.getCode());
+            out.println(currentPlayer.getPrompt());
+            out.println(currentPlayer.getGuess());
+    }
+    }
     /**
      * Accepts a new connection and blocks until service is specified.
      * creates another thread based on the service needed.
      * Services are determined based on chars.
      * Ends after assigning thread.
      */
+
     private class ControlClientHandler extends Thread {
         private Socket clientSocket;
         private PrintWriter out;
@@ -234,6 +260,14 @@ public class MultiServer {
                         case "G":
                             out.println("Create player service started");
                             CreatePlayer(code.get());
+                            break;
+                        case "H":
+                            out.println("Player results service started");
+                            sendResults(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            break;
+                        case "I":
+                            out.println("Player image results service started");
+                            sendImgResults(clientSocket.getOutputStream(), clientSocket.getInputStream());
                             break;
                         default:
                             out.println("Session terminated");

@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class UI {
@@ -146,6 +147,7 @@ public class UI {
     /**
      * Send guess.
      * Display results.
+     *
      * @throws IOException
      */
     public void submit() throws IOException {
@@ -162,23 +164,35 @@ public class UI {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        h.init(serverip, 4000);
-
-        peerGuess = h.requestGuess();
-        //Display the results here.
-        PeerGuessLabel.setText(peerGuess);
-        PeerGuessLabel.revalidate();
-        PeerGuessLabel.repaint();
-        //Make sure this reads the prompt.
-        //The peer's prompt is never set.
-        PeerPromptLabel.setText(peerPrompt);
-        PeerPromptLabel.repaint();
-
-        timerLabel.setText(prompt);
-        timerLabel.repaint();
-
-        promptLabel.setText(guess);
+        try {
+            display();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
+
+    public void display() throws Exception {
+        h.init(serverip,4000);
+//    peerGuess =h.requestGuess();
+    //Display the results here.
+        String[]results;
+        results = Arrays.copyOf(h.requestResults(false), 4);
+        while (!results[0].equals("0")) {
+            peerGuess = results[2];
+            PeerGuessLabel.setText(peerGuess);
+            PeerGuessLabel.revalidate();
+            PeerGuessLabel.repaint();
+            //Make sure this reads the prompt.
+            peerPrompt = results[1];
+            PeerPromptLabel.setText(peerPrompt);
+            PeerPromptLabel.repaint();
+
+            timerLabel.setText(prompt);
+            timerLabel.repaint();
+
+            promptLabel.setText(guess);
+        }
+}
 
     // set the form up for guessing what the drawing is
     // loads other users drawing

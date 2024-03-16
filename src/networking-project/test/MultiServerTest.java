@@ -4,9 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MultiServerTest {
+
     @Test
     @Order(1)
     public void Client_Create_Player() throws Exception {
@@ -63,8 +69,83 @@ class MultiServerTest {
         client4.init("127.0.0.1", 4000);
         //causes socket reset.
         String msg2 = client4.requestImage();
-        client4.display();
         assertEquals(msg2, "Sending image service started");
 
+    }
+    @Test
+    @Order(6)
+    public void Client_Request_Results() throws Exception {
+        Client client5 = new Client();
+        //Specify requesting results.
+        client5.init("127.0.0.1", 4000);
+        String[]results;
+        String[]fResults = new String[4];
+        //structured like a do-while loop.
+        boolean repeat = false;
+        do {
+            results = Arrays.copyOf(client5.requestResults(repeat), 4);
+            fResults[0] = results[0];
+            fResults[1] = results[1];
+            fResults[2] = results[2];
+            fResults[3] = results[3];
+            repeat = true;
+        }
+        while (!results[0].equals("0"));
+
+        assertEquals(fResults[0], "0");
+        assertEquals(fResults[1], "ABC");
+        assertEquals(fResults[2], "hello world");
+        assertEquals(fResults[3], "teapot");
+    }
+    @Test
+    @Order(7)
+    public void Client_Request_Multiple_Results() throws Exception {
+        Client client5 = new Client();
+        //Specify requesting results.
+        client5.init("127.0.0.1", 4000);
+        String[]results;
+        String[]fResults = new String[4];
+        //Testing for multiple players.
+        //Create a data structure for holding the results of all players.
+        ArrayList<String[]>pResults = new ArrayList<>();
+        //structured like a do-while loop.
+        boolean repeat = false;
+        do {
+            results = Arrays.copyOf(client5.requestResults(repeat), 4);
+            pResults.add(Arrays.copyOf(results, 4));
+            repeat = true;
+        }
+        while (!results[0].equals("0"));
+        //Test for values of first player.
+        fResults = Arrays.copyOf(pResults.getFirst(), 4);
+//        assertEquals(fResults[0], "0");
+        assertEquals(fResults[1], "ABC");
+        assertEquals(fResults[2], "hello world");
+        assertEquals(fResults[3], "teapot");
+        //If presults's size is greater than 1, perform multiple value testing.
+        if (pResults.size() > 1){
+            fResults = Arrays.copyOf(pResults.get(1), 4);
+//            assertEquals(fResults[0], "0");
+            assertEquals(fResults[1], "DEF");
+            assertEquals(fResults[2], "blue sky");
+            assertEquals(fResults[3], "kettle");
+        }
+    }
+    @Test
+    @Order(8)
+    public void Client_Request_Img_Multiple_Results() throws Exception {
+        Client client5 = new Client();
+        //Specify requesting results.
+        client5.init("127.0.0.1", 4000);
+        ArrayList<BufferedImage> results = new ArrayList<>();
+        BufferedImage result;
+        boolean repeat = false;
+        do{
+            result = client5.requestResultsImg(repeat);
+            results.add(result);
+            client5.display(result);
+            repeat = true;
+        }
+        while(result.getHeight()!= 1 && result.getWidth()!= 1);
     }
 }
