@@ -189,8 +189,9 @@ public class MultiServer {
             Thread.sleep(1000);
             Player currentPlayer = cPlayers.get(i);
             sImage(dos, currentPlayer.getpImage());
-
         }
+        Thread.sleep(1000);
+        sImage(dos, new BufferedImage(1, 1, 1));
         dos.close();
     }
     public void sendResults(OutputStream outs, InputStream ins) {

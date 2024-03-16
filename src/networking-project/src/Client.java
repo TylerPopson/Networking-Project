@@ -179,6 +179,7 @@ public class Client {
         if (!repeatCall) {
             String response = sendMessage("I");
         }
+
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
         int len = dis.readInt();
         System.out.println("len is " + len);

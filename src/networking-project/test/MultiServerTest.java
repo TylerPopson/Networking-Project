@@ -146,6 +146,6 @@ class MultiServerTest {
             client5.display(result);
             repeat = true;
         }
-        while(result.getHeight() !=1 && result.getWidth() != 1);
+        while(result.getHeight()!= 1 && result.getWidth()!= 1);
     }
 }
