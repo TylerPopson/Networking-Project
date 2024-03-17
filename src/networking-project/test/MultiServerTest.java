@@ -148,4 +148,14 @@ class MultiServerTest {
         }
         while(result.getHeight()!= 1 && result.getWidth()!= 1);
     }
+    @Test
+    @Order(9)
+    public void Client_CLear_Players() throws Exception {
+        Client client5 = new Client();
+        //Specify requesting results.
+        client5.init("127.0.0.1", 4000);
+        client5.clearAllPlayers();
+        client5.init("127.0.0.1", 4000);
+        assertEquals(client5.requestPlayerCount(), "0");
+    }
 }
