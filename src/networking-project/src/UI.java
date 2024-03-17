@@ -109,7 +109,7 @@ public class UI {
                         h.init(serverip, 4000);
                         h.sendPrompt(prompt);
                         h.init(serverip, 4000);
-                        h.sendImage();
+                        h.sendImage(img);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
@@ -173,17 +173,23 @@ public class UI {
 
     public void display() throws Exception {
         h.init(serverip,4000);
-//    peerGuess =h.requestGuess();
-    //Display the results here.
+        //Display the results here.
         String[]results;
-        results = Arrays.copyOf(h.requestResults(false), 4);
-        while (!results[0].equals("0")) {
-            peerGuess = results[2];
+        boolean repeat = false;
+        do {
+            peerImg = h.requestResultsImg(repeat);
+
+            ImageIcon icon = new ImageIcon(peerImg);
+            JLabel label = new JLabel(icon);
+            displayArea.add(label);
+
+            results = Arrays.copyOf(h.requestResults(repeat), 4);
+            peerGuess = results[3];
             PeerGuessLabel.setText(peerGuess);
             PeerGuessLabel.revalidate();
             PeerGuessLabel.repaint();
             //Make sure this reads the prompt.
-            peerPrompt = results[1];
+            peerPrompt = results[2];
             PeerPromptLabel.setText(peerPrompt);
             PeerPromptLabel.repaint();
 
@@ -191,16 +197,20 @@ public class UI {
             timerLabel.repaint();
 
             promptLabel.setText(guess);
+
+            repeat = true;
         }
+             while (!results[0].equals("0"));
+
 }
 
     // set the form up for guessing what the drawing is
     // loads other users drawing
     // replaces the canvas with it ahd enables the guess field
     public void guess() {
-        ImageIcon icon = new ImageIcon(img);
-        JLabel label = new JLabel(icon);
-        displayArea.add(label);
+//        ImageIcon icon = new ImageIcon(img);
+//        JLabel label = new JLabel(icon);
+//        displayArea.add(label);
         guessInput.setEnabled(true);
         submitButton.setEnabled(true);
 

@@ -81,15 +81,15 @@ public class Client {
         sendMessage("K");
     }
     //Sends an image that is currently read from the disk.
-    public String sendImage() throws Exception {
-        BufferedImage img;
+
+    public String sendImage(BufferedImage img) throws Exception {
         String msg = "";
         try {
             //Designate an image is being sent.
             msg = sendMessage("A");
-            System.out.println("Reading image from drive.");
-            //Read an image from the drive.
-            img = ImageIO.read(new File("lines.png"));
+//            System.out.println("Reading image from drive.");
+//            //Read an image from the drive.
+//            img = ImageIO.read(new File("lines.png"));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             ImageIO.write(img, "jpg", baos);

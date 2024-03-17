@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +27,10 @@ class MultiServerTest {
     @Order(2)
     public void Client_Send_Img() throws Exception {
         Client client3 = new Client();
+        BufferedImage img = ImageIO.read(new File("lines.png"));
         //Specify starting the image service.
         client3.init("127.0.0.1", 4000);
-        String msg = client3.sendImage();
+        String msg = client3.sendImage(img);
         assertEquals(msg, "Image service started");
     }
     @Test
