@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 
-import static java.awt.image.BufferedImage.TYPE_INT_RGB;
-
 /**
  * Representation of a Host.
  * Connects to the statically defined peer in the network.
@@ -78,6 +76,9 @@ public class Client {
 
     public String createPlayer() throws Exception {
         return sendMessage("G");
+    }
+    public String clearAllPlayers() throws Exception {
+        return sendMessage("K");
     }
 
     public String sendImage() throws Exception {
@@ -153,8 +154,8 @@ public class Client {
     public String requestGuess() throws IOException {
         return sendMessage("F");
     }
-    public int requestPlayerCount() throws IOException{
-        return Integer.parseInt(sendMessage("J"));
+    public String requestPlayerCount() throws IOException{
+        return sendMessage("J");
     }
     public void cutConnection() throws IOException {
         hostSocket.close();
@@ -182,7 +183,6 @@ public class Client {
 
         DataInputStream dis = new DataInputStream(hostSocket.getInputStream());
         int len = dis.readInt();
-        System.out.println("len is " + len);
         byte[] data = new byte[len];
         dis.readFully(data);
         InputStream ian = new ByteArrayInputStream(data);

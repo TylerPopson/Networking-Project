@@ -22,8 +22,8 @@ public class MultiServer {
     private final AtomicReference<String> guess = new AtomicReference<>();
     private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
     //Array representation of connected players.
-    private final Player[] source = new Player[]{new Player(), new Player()};
-    private final AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<>(source);
+    private Player[] source = new Player[]{new Player(), new Player()};
+    private AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<>(source);
     public class Player {
         public Player(){}
         public Player(String code){
@@ -163,6 +163,10 @@ public class MultiServer {
         cPlayers.set(playercount.get(), player1);
         playercount.set(playercount.get()+1);
     }
+    public void clearPlayers(){
+        cPlayers = new AtomicReferenceArray<>(0);
+        playercount.set(0);
+    }
 
     /**
      * Compares the specified code with each player in the data structure holding player information.
@@ -268,6 +272,13 @@ public class MultiServer {
                         case "I":
                             out.println("Player image results service started");
                             sendImgResults(clientSocket.getOutputStream(), clientSocket.getInputStream());
+                            break;
+                        case "J":
+                            out.println(playercount.get());
+                            break;
+                        case "K":
+                            out.println("Clear players service started");
+                            clearPlayers();
                             break;
                         default:
                             out.println("Session terminated");
