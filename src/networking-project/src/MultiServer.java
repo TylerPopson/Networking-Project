@@ -15,15 +15,13 @@ public class MultiServer {
      * Handles clients reconnecting.
      * Creates a socket for every client.
      */
+    //Host connection
     private ServerSocket serverSocket;
-    //Buffered Image for holding image.
-    private static final AtomicReference<BufferedImage> bImage = new AtomicReference<>();
-    private static final AtomicReference<String> prompt = new AtomicReference<>();
-    private final AtomicReference<String> guess = new AtomicReference<>();
     private final AtomicReference<Integer>playercount = new AtomicReference<>(0);
     //Array representation of connected players.
     private Player[] source = new Player[]{new Player(), new Player()};
     private AtomicReferenceArray<Player> cPlayers = new AtomicReferenceArray<>(source);
+
     public class Player {
         public Player(){}
         public Player(String code){
@@ -71,6 +69,7 @@ public class MultiServer {
         server.start(4000);
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public void start(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         //Accept a connection.
@@ -112,7 +111,7 @@ public class MultiServer {
             System.out.println("Exception: " + e.getMessage());
         }
     }
-    //Helper method for sImageHandler, contains most of the functionality for sending images.
+    //Helper method for sending images, contains most of the functionality for sending images.
     public void sImage(DataOutputStream dos, BufferedImage img) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -163,13 +162,14 @@ public class MultiServer {
         cPlayers.set(playercount.get(), player1);
         playercount.set(playercount.get()+1);
     }
+    //Sets the playercount to 0, allowing recreation of the player info data structure
     public void clearPlayers(){
-        cPlayers = new AtomicReferenceArray<>(0);
         playercount.set(0);
     }
 
     /**
-     * Compares the specified code with each player in the data structure holding player information.
+     * Compares the specified code with each player in the player info data structure.
+     * Handles two players.
      * @param code player code
      * @return the current player. Returns null if no player with the specified code is found.
      */
@@ -185,6 +185,14 @@ public class MultiServer {
         }
         return null;
     }
+
+    /**
+     * Sends the drawings of each player.
+     * Sends an empty image upon completion.
+     * @param outs outward data stream
+     * @param ins inner data stream
+     * @throws Exception socket or EOF related exceptions
+     */
     public void sendImgResults(OutputStream outs, InputStream ins) throws Exception {
 
         PrintWriter out = new PrintWriter(outs, true);
@@ -198,6 +206,13 @@ public class MultiServer {
         sImage(dos, new BufferedImage(1, 1, 1));
         dos.close();
     }
+
+    /**
+     * sends the results of each player.
+     * stops execution after the last set of results has been sent
+     * @param outs outward data stream
+     * @param ins inner data stream
+     */
     public void sendResults(OutputStream outs, InputStream ins) {
         PrintWriter out = new PrintWriter(outs, true);
         //may want to decrement.
